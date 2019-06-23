@@ -1,0 +1,25 @@
+Principal Authors (major contributors, alphabetically)
+
+David Chan <david@troi.org>
+Roan Kattouw <roan.kattouw@gmail.com>
+
+
+Patch Contributors (minor contributors, alphabetically)
+
+
+Libraries used (alphabetically)
+
+jQuery
+ – https://jquery.com/
+ – MIT license
+ – jQuery Foundation and other contributors
+
+UnicodeJS
+ – https://www.mediawiki.org/wiki/OOjs_UI
+ – MIT license
+ – UnicodeJS Team and other contributors
+
+VisualEditor
+ – https://www.mediawiki.org/wiki/VisualEditor
+ – MIT license
+ – VisualEditor Team and other contributors

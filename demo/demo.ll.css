@@ -1,0 +1,18 @@
+/*!
+ * LL two-way parallel editor - demo stylesheet
+ *
+ * @copyright 2019 LL team and others; see LICENSE.txt for terms
+ */
+
+.ve-demo-editors {
+	display: flex;
+}
+
+.ve-demo-editor {
+	width: 50%;
+}
+
+/* XXX should this be in ve.ce.ContentBranchNode.css? */
+.ve-ce-contentBranchNode-ll-dirty {
+	background-color: #ff0;
+}

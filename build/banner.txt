@@ -1,0 +1,10 @@
+/*!
+ * LL v<%= pkg.version %>
+ * https://github.com/divec/ll
+ *
+ * Copyright 2019 LL Team.
+ * Released under the MIT license
+ * http://mit-license.org
+ *
+ * Date: <%= grunt.template.today("isoUtcDateTime") %>
+ */

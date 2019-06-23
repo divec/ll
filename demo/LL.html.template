@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<!--
+	/*!
+	 * LL two-way parallel translation
+	 *
+	 * @copyright 2019 LL team and others; see LICENSE.txt for terms
+	 */
+	-->
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<title>LL two-way parallel translation</title>
+
+<!-- STYLES -->
+		<link rel=stylesheet href="../lib/ve/demos/ve/demo.minimal.css">
+		<link rel=stylesheet href="demo.ll.css">
+	</head>
+	<body dir="<!-- DIR -->">
+		<h1 style="text-align: center">Utterly bleeding edge demo (loads slowly)</h1>
+		<div class="ve-demo-editors">
+			<div class="ve-demo-editor">
+				<div class="ve-instance"></div>
+			</div>
+			<div class="ve-demo-editor">
+				<div class="ve-instance"></div>
+			</div>
+		</div>
+
+<!-- SCRIPTS -->
+		<script src="demo.ll.js"></script>
+	</body>
+</html>

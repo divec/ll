@@ -1,0 +1,45 @@
+{
+	"ll": {
+		"scripts": [
+			"src/ve.ce.LinearEnterKeyDownHandler.ext.js",
+			"src/ve.dm.ext.js",
+			"src/ve.dm.LinearData.ext.js",
+			"src/ve.dm.ContentBranchNode.ext.js",
+			"src/ve.dm.Document.ext.js",
+			"src/ve.dm.Surface.ext.js",
+			"src/ve.dm.Transaction.ext.js",
+			"src/ve.ui.LLAction.js",
+			"src/ve.ui.LLClearDirtyCommand.js",
+			"src/ve.ui.LLClearDirtyTool.js",
+			"src/ll.js",
+			"src/ll.init.js",
+			"src/ll.ChunkedText.js",
+			"src/ll.Translator.js",
+			"src/ll.ApertiumTranslator.js",
+			"src/ll.Prism.js"
+		],
+		"dependencies": [
+			"visualEditor.desktop.standalone.apex"
+		]
+	},
+	"ll.test": {
+		"scripts": [
+			"tests/ll.testutils.js",
+			"tests/ll.test.js",
+			"tests/ll.ApertiumTranslator.test.js",
+			"tests/ll.ChunkedText.test.js",
+			"tests/ll.Prism.test.js",
+			"tests/ve.ui.LLClearDirtyCommand.test.js"
+		],
+		"dependencies": [
+			"ll",
+			"visualEditor.test"
+		]
+	},
+	"ll.test.browser": {
+		"dependencies": [
+			"qunit",
+			"ll.test"
+		]
+	}
+}

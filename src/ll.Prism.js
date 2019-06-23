@@ -65,48 +65,55 @@ OO.initClass( ll.Prism );
  * @param {ve.dm.Transaction} tx A transaction applying to doc
  */
 ll.Prism.prototype.applyDistorted = function ( doc, otherDoc, tx ) {
-	var distortion,
-		prism = this;
+	var distortion;
+	if ( tx.noEcho ) {
+		return;
+	}
+	distortion = tx.distort( doc, otherDoc );
+	otherDoc.commit( distortion.tx );
+	ll.setTimeout( this.flagDirty.bind( this, distortion.changedNodePairs ) );
+	this.throttledMaybeTranslate( doc, otherDoc );
+};
+
+/**
+ * Flag the target node as mt/approved, and mark for translation, as appropriate
+ *
+ * @param {Map} changedNodePairs map whose pairs are (sourceNode, targetNode)
+ */
+ll.Prism.prototype.flagDirty = function ( changedNodePairs ) {
+	var prism = this;
 
 	function eqJSON( val1, val2 ) {
 		return JSON.stringify( val1 ) === JSON.stringify( val2 );
 	}
 
-	if ( tx.noEcho ) {
-		return;
-	}
-	distortion = tx.distort( doc, otherDoc );
-	ll.setTimeout( function () {
-		distortion.changedNodePairs.forEach( function ( targetNode, sourceNode ) {
-			var attributeTx, sourceDirty;
+	changedNodePairs.forEach( function ( targetNode, sourceNode ) {
+		var attributeTx, sourceDirty,
+			targetDoc = targetNode.getDocument();
 
-			if ( !sourceNode.getDocument() ) {
-				// Node has been detached since marking this changed pair
-				return;
-			}
-			sourceDirty = !eqJSON(
-				sourceNode.getChunked(),
-				sourceNode.getLastApproved()
+		if ( !sourceNode.getDocument() || !targetNode.getDocument() ) {
+			// Node has been detached since marking this changed pair
+			return;
+		}
+		sourceDirty = !eqJSON(
+			sourceNode.getChunked(),
+			sourceNode.getLastApproved()
+		);
+		if (
+			sourceNode.getAttribute( 'll-dirty' ) !== 'mt' &&
+			sourceNode.getAttribute( 'll-dirty' ) !== 'edited' &&
+			targetNode.getAttribute( 'll-dirty' ) !== 'edited'
+		) {
+			attributeTx = ve.dm.TransactionBuilder.static.newFromAttributeChanges(
+				targetDoc,
+				targetNode.getOuterRange().start,
+				{ 'll-dirty': sourceDirty ? 'mt' : 'approved' }
 			);
-			if (
-				sourceNode.getAttribute( 'll-dirty' ) !== 'mt' &&
-				sourceNode.getAttribute( 'll-dirty' ) !== 'edited' &&
-				targetNode.getAttribute( 'll-dirty' ) !== 'edited'
-			) {
-				attributeTx = ve.dm.TransactionBuilder.static.newFromAttributeChanges(
-					otherDoc,
-					targetNode.getOuterRange().start,
-					{ 'll-dirty': sourceDirty ? 'mt' : 'approved' }
-				);
-				attributeTx.noEcho = true;
-				otherDoc.commit( attributeTx );
-			}
-			prism.changedNodePairs.set( sourceNode, targetNode );
-
-		} );
+			attributeTx.noEcho = true;
+			targetDoc.commit( attributeTx );
+		}
+		prism.changedNodePairs.set( sourceNode, targetNode );
 	} );
-	prism.throttledMaybeTranslate( doc, otherDoc );
-	otherDoc.commit( distortion.tx );
 };
 
 /**

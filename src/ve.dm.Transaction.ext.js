@@ -13,7 +13,9 @@
  *
  * @param {ve.dm.Document} oldDoc Document in the state on which the transaction applies
  * @param {ve.dm.Document} newDoc Corresponding document with the same structure
- * @return {ve.dm.Transaction} Adapted transaction to apply to newDoc
+ * return {Object} Info about adapted transaction
+ * @return {ve.dm.Transaction} return.tx Adapted transaction to apply to newDoc
+ * @return {Map} return.changedNodePairs Map of changed nodes with (sourceNode, targetNode) pairs
  */
 ve.dm.Transaction.prototype.distort = function ( oldDoc, newDoc ) {
 	var i, len, op, oldPosition, newPosition, treePath, newRemove, newInsert,

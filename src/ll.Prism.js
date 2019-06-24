@@ -20,7 +20,8 @@
  * @param {ll.Translator} [translator] Translator object
  */
 ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
-	var prism = this;
+	var tx1, tx2,
+		prism = this;
 
 	function makeSurface( lang, dir, html, store ) {
 		var doc = ve.dm.converter.getModelFromDom(
@@ -32,9 +33,10 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 	}
 
 	// TODO use one target with two surfaces? But then they'd share one toolbar, do we want that?
-	this.firstSurface = makeSurface( firstOptions.lang, firstOptions.dir, firstOptions.html );
+	this.store = new ve.dm.HashValueStore();
+	this.firstSurface = makeSurface( firstOptions.lang, firstOptions.dir, firstOptions.html, this.store );
 	this.firstDoc = this.firstSurface.getDocument();
-	this.secondSurface = makeSurface( secondOptions.lang, secondOptions.dir, secondOptions.html, this.firstDoc.getStore() );
+	this.secondSurface = makeSurface( secondOptions.lang, secondOptions.dir, secondOptions.html, this.store );
 	this.secondDoc = this.secondSurface.getDocument();
 	this.firstDoc.other = this.secondDoc;
 	this.secondDoc.other = this.firstDoc;
@@ -55,6 +57,17 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 		} );
 	}, 50 );
 	this.firstDoc.storeApprovedDescendants( this.firstDoc.getDocumentNode() );
+	this.completeHistory = new ll.JointHistory( this.firstDoc, this.secondDoc );
+	if ( this.store.getLength() > 0 ) {
+		// Push the initial store, with an identity transaction pair
+		tx1 = new ve.dm.Transaction(
+			[ { type: 'retain', length: this.firstDoc.data.data.length } ]
+		);
+		tx2 = new ve.dm.Transaction(
+			[ { type: 'retain', length: this.secondDoc.data.data.length } ]
+		);
+		this.completeHistory.pushTransactionPair( tx1, tx2 );
+	}
 };
 
 /* Initialize */
@@ -72,11 +85,24 @@ OO.initClass( ll.Prism );
  */
 ll.Prism.prototype.applyDistorted = function ( doc, otherDoc, tx ) {
 	var distortion;
+	if ( tx.isEcho ) {
+		return;
+	}
 	if ( tx.noEcho ) {
+		if ( doc === this.firstDoc ) {
+			this.completeHistory.pushTransactionPair( tx, null );
+		} else {
+			this.completeHistory.pushTransactionPair( null, tx );
+		}
 		return;
 	}
 	distortion = tx.distort( doc, otherDoc );
 	otherDoc.commit( distortion.tx );
+	if ( doc === this.firstDoc ) {
+		this.completeHistory.pushTransactionPair( tx, distortion.tx );
+	} else {
+		this.completeHistory.pushTransactionPair( distortion.tx, tx );
+	}
 	ll.setTimeout( this.flagDirty.bind( this, distortion.changedNodePairs ) );
 	this.throttledMaybeTranslate( doc, otherDoc );
 };

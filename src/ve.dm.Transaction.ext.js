@@ -77,6 +77,22 @@ ve.dm.Transaction.prototype.distort = function ( oldDoc, newDoc ) {
 		}
 	}
 	newTx = new ve.dm.Transaction( newOps, this.authorId );
-	newTx.noEcho = true;
+	newTx.isEcho = true;
 	return { tx: newTx, changedNodePairs: changedNodePairs };
+};
+
+ve.dm.Transaction.prototype.getLengthAndDiff = function () {
+	var i, iLen, op,
+		length = 0,
+		diff = 0;
+	for ( i = 0, iLen = this.operations.length; i < iLen; i++ ) {
+		op = this.operations[ i ];
+		if ( op.type === 'retain' ) {
+			length += op.length;
+		} else if ( op.type === 'replace' ) {
+			length += op.remove.length;
+			diff += op.insert.length - op.remove.length;
+		}
+	}
+	return { length: length, diff: diff };
 };

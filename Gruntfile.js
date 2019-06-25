@@ -71,6 +71,7 @@ module.exports = function ( grunt ) {
 				load: [ 'll' ],
 				run: [ 'll' ],
 				env: { debug: false },
+				dir: 'ltr',
 				pathPrefix: '../',
 				i18n: [ 'i18n/', 'lib/ve/i18n/', 'lib/ve/lib/oojs-ui/i18n/' ],
 				indent: '\t\t'

@@ -19,7 +19,7 @@
 			"src/ll.Prism.js"
 		],
 		"dependencies": [
-			"visualEditor.desktop.standalone.apex"
+			"visualEditor.desktop.standalone.apex.dist"
 		]
 	},
 	"ll.test": {

@@ -1,6 +1,6 @@
 # LL — two-way parallel translation
 
-![LL logo](http://troi.org/ll-logo-112x140.png)
+![LL logo](https://raw.githubusercontent.com/divec/ll/master/demo/ll-logo.png)
 
 ## Getting started
 

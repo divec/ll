@@ -22,12 +22,12 @@
 				{
 					lang: 'en',
 					dir: 'ltr',
-					html: '<h1>LL two-way parallel translation</h1><ul><li><b>Bidirectional</b> translation.</li><li>The source and target language is determined per paragraph</li><li>Highlighted paragraphs contain uncommitted translations.</li><li>Click “✓” to commit the translation.</li></ul><figure><img src="ll-logo-112x140.png" width="112" height="140"><figcaption>LL is parallel translation</figcaption></figure>'
+					html: '<h1>LL two-way parallel translation</h1><ul><li><b>Bidirectional</b> translation.</li><li>The source and target language is determined per paragraph</li><li>Highlighted paragraphs contain uncommitted translations.</li><li>Click “✓” to commit the translation.</li></ul><figure><img src="ll-logo.svg" width="248" height="105"><figcaption>LL is parallel translation</figcaption></figure>'
 				},
 				{
 					lang: 'es',
 					dir: 'ltr',
-					html: '<h1>LL traducción paralela bidireccional</h1><ul><li>Traducción <b>bidireccional</b>.</li><li>El idioma de origen y destino se determina por párrafo</li><li>Los párrafos resaltados contienen traducciones no comprometidas.</li><li>Haga clic en “✓” para confirmar la traducción.</li></ul><figure><img src="ll-logo-112x140.png" width="112" height="140"><figcaption>LL es traducción paralela</figcaption></figure>'
+					html: '<h1>LL traducción paralela bidireccional</h1><ul><li>Traducción <b>bidireccional</b>.</li><li>El idioma de origen y destino se determina por párrafo</li><li>Los párrafos resaltados contienen traducciones no comprometidas.</li><li>Haga clic en “✓” para confirmar la traducción.</li></ul><figure><img src="ll-logo.svg" width="248" height="105"><figcaption>LL es traducción paralela</figcaption></figure>'
 				},
 				new ll.ApertiumTranslator( 'http://localhost:2737/translate' )
 			);

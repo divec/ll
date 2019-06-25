@@ -15,8 +15,8 @@
 		} )
 		.done( function () {
 			var prism,
-				firstTarget = new ve.init.sa.Target(),
-				secondTarget = new ve.init.sa.Target();
+				firstTarget = new ll.init.LLTarget(),
+				secondTarget = new ll.init.LLTarget();
 
 			prism = new ll.Prism(
 				{

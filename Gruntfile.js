@@ -73,7 +73,8 @@ module.exports = function ( grunt ) {
 				env: { debug: false },
 				pathPrefix: '../',
 				i18n: [ 'i18n/', 'lib/ve/i18n/', 'lib/ve/lib/oojs-ui/i18n/' ],
-				indent: '\t\t'
+				indent: '\t\t',
+				dir: 'ltr'
 			},
 			test: {
 				targetFile: 'tests/index.html',

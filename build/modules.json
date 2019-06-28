@@ -17,10 +17,12 @@
 			"src/ll.Translator.js",
 			"src/ll.ApertiumTranslator.js",
 			"src/ll.Prism.js"
-		],
+		]
+	},
+	"ll.build": {
 		"dependencies": [
 			"visualEditor.desktop.standalone.apex.dist",
-			"visualEditor.standalone.read"
+			"ll"
 		]
 	},
 	"ll.test": {
@@ -33,8 +35,8 @@
 			"tests/ve.ui.LLClearDirtyCommand.test.js"
 		],
 		"dependencies": [
-			"ll",
-			"visualEditor.test"
+			"visualEditor.test",
+			"ll"
 		]
 	},
 	"ll.test.browser": {

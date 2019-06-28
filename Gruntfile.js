@@ -22,7 +22,7 @@ module.exports = function ( grunt ) {
 	for ( k in llModules ) {
 		modules[ k ] = llModules[ k ];
 	}
-	buildFiles = moduleUtils.makeBuildList( modules, [ 'll' ] );
+	buildFiles = moduleUtils.makeBuildList( modules, [ 'll.build' ] );
 	testFiles = moduleUtils.makeBuildList( modules, [ 'll.test' ] ).scripts;
 
 	grunt.loadNpmTasks( 'grunt-banana-checker' );
@@ -68,8 +68,8 @@ module.exports = function ( grunt ) {
 				targetFile: 'demo/LL.html',
 				template: 'demo/LL.html.template',
 				modules: modules,
-				load: [ 'll' ],
-				run: [ 'll' ],
+				load: [ 'll.build' ],
+				run: [ 'll.build' ],
 				env: { debug: false },
 				dir: 'ltr',
 				pathPrefix: '../',

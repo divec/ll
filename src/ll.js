@@ -8,7 +8,9 @@
  * LL namespace
  */
 
-ll = {};
+ll = {
+	init: {}
+};
 
 /**
  * Break text into wordbreak-separated tokens, with whitespace normalized

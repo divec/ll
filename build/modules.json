@@ -12,7 +12,7 @@
 			"src/ve.ui.LLClearDirtyCommand.js",
 			"src/ve.ui.LLClearDirtyTool.js",
 			"src/ll.js",
-			"src/ll.init.js",
+			"src/ll.init.LLTarget.js",
 			"src/ll.ChunkedText.js",
 			"src/ll.Translator.js",
 			"src/ll.ApertiumTranslator.js",

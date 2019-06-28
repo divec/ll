@@ -1,6 +1,7 @@
 Principal Authors (major contributors, alphabetically)
 
 David Chan <david@troi.org>
+Ed Sanders <ejsanders@gmail.com>
 Roan Kattouw <roan.kattouw@gmail.com>
 
 

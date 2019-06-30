@@ -29,3 +29,27 @@ OO.initClass( ll.Translator );
  * @return {Promise} Promise resolving with translated ll.ChunkedText[]
  */
 ll.Translator.prototype.translate = null;
+
+/**
+ * Get available language pairs
+ * @return {Promise} Promise resolving with list of [{source:'source',target:'target'}]
+ */
+ll.Translator.prototype.getLangPairsPromise = null;
+
+ll.Translator.prototype.getParallelLangPairsPromise = function () {
+	return this.getLangPairsPromise().then( function ( pairs ) {
+		var pairsObject = {};
+		pairs.forEach( function ( pair ) {
+			pairsObject[ pair.source + '|' + pair.target ] = true;
+		} );
+		return pairs.filter( function ( pair ) {
+			return pairsObject[ pair.target + '|' + pair.source ];
+		} );
+	} );
+};
+
+ll.Translator.prototype.pairSupported = function ( langPairs, source, target ) {
+	return langPairs.some( function ( pair ) {
+		return pair.source === source && pair.target === target;
+	} );
+};

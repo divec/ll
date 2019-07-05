@@ -10,6 +10,11 @@
 
 .ve-demo-editor {
 	width: 50%;
+	padding: 1em;
+}
+
+.ve-demo-editor .ve-instance {
+	margin: 0 0 1em 0;
 }
 
 /* XXX should this be in ve.ce.ContentBranchNode.css? */

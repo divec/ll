@@ -30,22 +30,9 @@ QUnit.test( 'translate', function ( assert ) {
 			{ start: 17, text: 'roja', annList: [ 'ccc', 'rrr' ] }
 		]
 	);
-	translator = new ll.ApertiumTranslator( 'http://dummy/translate' );
-
-	assert.throws(
-		function () { translator.translate( 'unknown-lang', 'es', [] ); },
-		/^Error: Unsupported language code/,
-		'Throws on invalid source language'
-	);
-
-	assert.throws(
-		function () { translator.translate( 'en', 'unknown-lang', [] ); },
-		/^Error: Unsupported language code/,
-		'Throws on invalid target language'
-	);
-
 	$.ajax = ll.fakeAjaxApertium;
-	ll.fakeAjaxApertiumMap = {
+	ll.fakeAjaxApertiumList = [ { sourceLanguage: 'eng', targetLanguage: 'spa' } ];
+	ll.fakeAjaxApertiumTranslateMap = {
 		'': '',
 		':!!:': ':!!:',
 		':!!!:': ':!!!:',
@@ -54,10 +41,33 @@ QUnit.test( 'translate', function ( assert ) {
 		'It is a big RED Box': 'Es una gran Caja ROJA',
 		'It is a big red BOX': 'Es una gran CAJA roja'
 	};
-	translator.translate( 'en', 'es', [ blank, source ] ).then( function ( target ) {
+	$.when( true ).then( function () {
+		translator = new ll.ApertiumTranslator( 'http://dummy/translate' );
+		return translator.translate( 'unk', 'es', [] );
+	} ).then( function () {
+		assert.strictEqual( false, true, 'Throws on unsupported source language' );
+	} ).catch( function ( err ) {
+		assert.strictEqual(
+			!!( err.message && err.message.match( /^Unsupported language pair/ ) ),
+			true,
+			'Throws on unsupported source language'
+		);
+	} ).then( function () {
+		return translator.translate( 'en', 'unk', [] );
+	} ).then( function () {
+		assert.strictEqual( false, true, 'Throws on unsupported target language' );
+	} ).catch( function ( err ) {
+		assert.strictEqual(
+			!!( err.message && err.message.match( /^Unsupported language pair/ ) ),
+			true,
+			'Throws on unsupported target language'
+		);
+	} ).then( function () {
+		return translator.translate( 'en', 'es', [ blank, source ] );
+	} ).then( function ( target ) {
 		assert.deepEqual( target[ 0 ].toJSON(), blank.toJSON(), 'Blank text' );
 		assert.deepEqual( target[ 1 ].toJSON(), expect.toJSON(), 'Annotated text' );
-	} ).fail( function ( err ) {
+	} ).catch( function ( err ) {
 		assert.deepEqual( err, undefined, 'Translation error' );
 	} ).always( function () {
 		$.ajax = ll.ajaxReal;

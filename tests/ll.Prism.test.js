@@ -111,7 +111,7 @@ QUnit.test( 'maybeTranslate', function ( assert ) {
 	var fakeTimer = new ll.FakeTimer(),
 		done = assert.async();
 	fakeTimer.hijack();
-	ll.testMaybeTranslate( fakeTimer, assert ).fail( function ( err ) {
+	ll.testMaybeTranslate( fakeTimer, assert ).catch( function ( err ) {
 		assert.strictEqual( err, undefined, 'Exception thrown' );
 	} ).always( function () {
 		fakeTimer.unhijack();

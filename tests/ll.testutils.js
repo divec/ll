@@ -5,11 +5,18 @@
  */
 
 ll.realAjax = $.ajax;
-ll.fakeAjaxApertiumMap = {};
+ll.fakeAjaxApertiumList = [];
+ll.fakeAjaxApertiumTranslateMap = {};
 ll.fakeAjaxApertium = function ( req ) {
 	var resLines;
+	if ( req.url.match( /\/list$/ ) ) {
+		return $.when( { responseData: ll.fakeAjaxApertiumList } );
+	}
+	if ( !req.url.match( /\/translate$/ ) ) {
+		throw new Error( 'Unsupported url: ' + req.url );
+	}
 	resLines = req.data.q.split( /\n/ ).map( function ( qLine ) {
-		var resLine = ll.fakeAjaxApertiumMap[ qLine ];
+		var resLine = ll.fakeAjaxApertiumTranslateMap[ qLine ];
 		if ( resLine === undefined ) {
 			throw new Error( 'Unsupported query contents: "' + qLine + '"' );
 		}

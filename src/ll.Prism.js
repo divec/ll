@@ -30,6 +30,7 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 		);
 		return new ve.dm.Surface( doc, doc.getDocumentNode(), { sourceMode: false } );
 	}
+
 	// TODO use one target with two surfaces? But then they'd share one toolbar, do we want that?
 	this.firstSurface = makeSurface( firstOptions.lang, firstOptions.dir, firstOptions.html );
 	this.firstDoc = this.firstSurface.getDocument();
@@ -38,6 +39,11 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 	this.firstDoc.other = this.secondDoc;
 	this.secondDoc.other = this.firstDoc;
 	this.translator = translator || null;
+
+	this.conflictAnnotation = ve.dm.annotationFactory.create( 'll/conflict' );
+	this.conflictHash = this.firstDoc.getStore().hash( this.conflictAnnotation );
+	this.updateAnnotation = ve.dm.annotationFactory.create( 'll/update' );
+	this.updateHash = this.firstDoc.getStore().hash( this.updateAnnotation );
 
 	this.firstDoc.on( 'precommit', this.applyDistorted.bind( this, this.firstDoc, this.secondDoc ) );
 	this.secondDoc.on( 'precommit', this.applyDistorted.bind( this, this.secondDoc, this.firstDoc ) );
@@ -195,6 +201,18 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 	var m1, m2, t1, m1m2, m1t1, startToken, endToken, start, end,
 		insertion, oldData, newData;
 
+	function annotateData( hash, data ) {
+		return data.map( function ( item ) {
+			if ( item.type ) {
+				return item;
+			}
+			if ( Array.isArray( item ) ) {
+				return [ item[ 0 ], [ hash ].concat( item[ 1 ] ) ];
+			}
+			return [ item, [ hash ] ];
+		} );
+	}
+
 	m1 = ll.getTokens( oldMachineTranslation.allText );
 	m2 = ll.getTokens( newMachineTranslation.allText );
 	t1 = ll.getTokens( oldTarget.allText );
@@ -204,7 +222,7 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 
 	if ( !m1m2 ) {
 		// No changes: m1 and m2 are identical
-		m1m2 = { start: 0, end: 0 };
+		m1m2 = { start: 0, end: m1.length };
 	}
 
 	if ( !m1t1 ) {
@@ -220,20 +238,32 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 		startToken = m1m2.start + t1.length - m1.length;
 		endToken = t1.length - m1m2.end;
 	} else {
-		// ranges overlap; do nothing
-		return undefined;
+		// Conflict between the MT update and the MT correction
+		newData = [].concat(
+			m2.slice( 0, m1m2.start ).join( '' ).split( '' ),
+			annotateData(
+				this.conflictHash,
+				t1.slice( m1t1.start, t1.length - m1t1.end ).join( '' ).split( '' )
+			),
+			annotateData(
+				this.updateHash,
+				m2.slice( m1m2.start, m2.length - m1m2.end ).join( '' ).split( '' )
+			),
+			m2.slice( m2.length - m1m2.end ).join( '' ).split( '' )
+		);
+		return newData;
 	}
-	start = t1.slice( 0, startToken ).join( '' ).length;
-	end = start + t1.slice( startToken, endToken ).join( '' ).length;
 	insertion = newMachineTranslation.slice(
 		m2.slice( 0, m1m2.start ).join( '' ).length,
 		m2.slice( 0, m2.length - m1m2.end ).join( '' ).length
 	);
 	oldData = oldTarget.toLinearData();
 	newData = [].concat(
-		oldData.slice( 0, start ),
-		insertion.toLinearData(),
-		oldData.slice( end )
+		t1.slice( 0, startToken ).join( '' ).split( '' ),
+		( start === 0 && end === oldData.length ) ?
+			insertion.toLinearData() :
+			annotateData( this.updateHash, insertion.toLinearData() ),
+		t1.slice( endToken ).join( '' ).split( '' )
 	);
 	return newData;
 };

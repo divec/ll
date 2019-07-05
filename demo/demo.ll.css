@@ -21,3 +21,12 @@
 .ve-ce-contentBranchNode-ll-dirty {
 	background-color: #fae168;
 }
+
+.ve-ce-contentBranchNode-ll-dirty .ll-conflict {
+	text-decoration: line-through;
+	background-color: #fbb;
+}
+
+.ve-ce-contentBranchNode-ll-dirty .ll-update {
+	text-decoration: underline;
+}

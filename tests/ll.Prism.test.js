@@ -121,7 +121,8 @@ QUnit.test( 'maybeTranslate', function ( assert ) {
 
 ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 	var prism, tests,
-		italic = 'h851288c946e755a1',
+		italicAnnotation = 'h851288c946e755a1',
+		updateAnnotation = 'h41c896f073fda2a6',
 		promise = $.when( true );
 
 	prism = new ll.Prism(
@@ -137,7 +138,7 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 				prism.firstDoc,
 				9,
 				[
-					[ 'g', [ italic ] ],
+					[ 'g', [ italicAnnotation ] ],
 					'h'
 				]
 			),
@@ -146,10 +147,10 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 			afterContent: [
 				'E',
 				'E',
-				[ 'F', [ italic ] ],
-				[ 'F', [ italic ] ],
-				[ 'G', [ italic ] ],
-				[ 'G', [ italic ] ],
+				[ 'F', [ italicAnnotation ] ],
+				[ 'F', [ italicAnnotation ] ],
+				[ 'G', [ italicAnnotation ] ],
+				[ 'G', [ italicAnnotation ] ],
 				'H',
 				'H'
 			]
@@ -171,7 +172,7 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 					test.afterRange.start,
 					test.afterRange.end
 				),
-				test.afterContent,
+				ll.annotateData( updateAnnotation, test.afterContent ),
 				test.msg
 			);
 			prism.firstSurface.change( test.tx.reversed() );
@@ -183,7 +184,7 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 					test.beforeRange.start,
 					test.beforeRange.end
 				),
-				beforeContent,
+				ll.annotateData( updateAnnotation, beforeContent ),
 				test.msg + ' (reversed)'
 			);
 		} );

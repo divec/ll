@@ -138,3 +138,15 @@ ll.setTimeout = setTimeout.bind( null );
  * @param {number} id Unique id for the postponement, returned by #setTimeout
  */
 ll.clearTimeout = clearTimeout.bind( null );
+
+ll.annotateData = function ( hash, data ) {
+	return data.map( function ( item ) {
+		if ( item.type ) {
+			return item;
+		}
+		if ( Array.isArray( item ) ) {
+			return [ item[ 0 ], [ hash ].concat( item[ 1 ] ) ];
+		}
+		return [ item, [ hash ] ];
+	} );
+};

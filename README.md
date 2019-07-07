@@ -5,10 +5,12 @@
 ## Getting started
 
 - Clone the repository
+- Get the ve submodule
+- `git submodule update --init lib/ve`
+- Initialise and build the repository
 - `npm install`
 - `grunt`
 - Initialise and build the VE sub-module
-- `git submodule update --init lib/ve`
 - `cd lib/ve`
 - `npm install`
 - `grunt build`

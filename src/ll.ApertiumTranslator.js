@@ -13,8 +13,8 @@
  * @param {string} url URL of apertium-apy instance; see https://github.com/apertium/apertium-apy
  */
 ll.ApertiumTranslator = function LLApertiumTranslator( url ) {
-	ll.ApertiumTranslator.super.call( this );
 	this.url = url;
+	ll.ApertiumTranslator.super.call( this );
 };
 
 /* Initialization */

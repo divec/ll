@@ -12,7 +12,7 @@
  * @constructor
  */
 ll.YandexTranslator = function LLYandexTranslator() {
-	this.url = 'https://translate.yandex.net/api/v1.5/tr.json/';
+	this.url = 'https://translate.yandex.net/api/v1.5/tr.json';
 	this.key = '<APIKEY>';
 
 	ll.YandexTranslator.super.call( this );
@@ -22,11 +22,15 @@ ll.YandexTranslator = function LLYandexTranslator() {
 
 OO.inheritClass( ll.YandexTranslator, ll.Translator );
 
+ll.YandexTranslator.static.outerSeparator = ':!!!:';
+
+ll.YandexTranslator.static.innerSeparator = ':!!:';
+
 /* Instance methods */
 
 ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
 	return $.ajax( {
-		url: this.url + 'getLangs',
+		url: this.url + '/getLangs',
 		datatype: 'json',
 		data: {
 			key: this.key
@@ -51,7 +55,7 @@ ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
  */
 ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
 	return $.ajax( {
-		url: this.url + 'translate',
+		url: this.url + '/translate',
 		method: 'post',
 		datatype: 'json',
 		data: {

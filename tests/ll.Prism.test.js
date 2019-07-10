@@ -122,7 +122,6 @@ QUnit.test( 'maybeTranslate', function ( assert ) {
 ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 	var prism, tests,
 		italicAnnotation = 'h851288c946e755a1',
-		updateAnnotation = 'h41c896f073fda2a6',
 		promise = $.when( true );
 
 	prism = new ll.Prism(
@@ -172,7 +171,7 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 					test.afterRange.start,
 					test.afterRange.end
 				),
-				ll.annotateData( updateAnnotation, test.afterContent ),
+				test.afterContent,
 				test.msg
 			);
 			prism.firstSurface.change( test.tx.reversed() );
@@ -184,10 +183,52 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 					test.beforeRange.start,
 					test.beforeRange.end
 				),
-				ll.annotateData( updateAnnotation, beforeContent ),
+				beforeContent,
 				test.msg + ' (reversed)'
 			);
 		} );
 	} );
 	return promise;
 };
+
+QUnit.test( 'adaptCorrections', function ( assert ) {
+	var tests, i, iLen, test, data,
+		fakePrism = {
+			conflictHash: '-',
+			updateHash: '+',
+			adaptCorrections: ll.Prism.prototype.adaptCorrections
+		};
+
+	function chunk( plaintext ) {
+		return new ll.ChunkedText( plaintext, [], [] );
+	}
+
+	function ann( hash, string ) {
+		return string.split( '' ).map( function ( ch ) {
+			return hash ? [ ch, [ hash ] ] : ch;
+		} );
+	}
+
+	tests = [
+		{
+			oldMt: 'No tengo ningún pantalón',
+			oldTarget: 'No tengo ningún pantalones',
+			newMt: 'No tengo ninguna camisa',
+			newTarget: [].concat(
+				ann( null, 'No tengo ' ),
+				ann( '-', 'ningún pantalones' ),
+				ann( '+', 'ninguna camisa' )
+			),
+			msg: 'Conflicting translation'
+		}
+	];
+	for ( i = 0, iLen = tests.length; i < iLen; i++ ) {
+		test = tests[ i ];
+		data = fakePrism.adaptCorrections(
+			chunk( test.oldMt ),
+			chunk( test.newMt ),
+			chunk( test.oldTarget )
+		);
+		assert.deepEqual( data, test.newTarget, test.msg );
+	}
+} );

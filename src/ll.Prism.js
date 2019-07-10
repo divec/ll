@@ -198,8 +198,8 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  * @return {Array|undefined} Linear data of machineTranslation2 with adapted human corrections; undefined if not adaptable
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var m1, m2, t1, m1m2, m1t1, startToken, endToken, start, end,
-		insertion, oldData, newData;
+	var m1, m2, t1, m1m2, m1t1, startToken, endToken, m2t1,
+		insertion, newData;
 
 	function annotateData( hash, data ) {
 		return data.map( function ( item ) {
@@ -239,17 +239,18 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 		endToken = t1.length - m1m2.end;
 	} else {
 		// Conflict between the MT update and the MT correction
+		m2t1 = ve.countEdgeMatches( m2, t1 );
 		newData = [].concat(
-			m2.slice( 0, m1m2.start ).join( '' ).split( '' ),
+			m2.slice( 0, m2t1.start ).join( '' ).split( '' ),
 			annotateData(
 				this.conflictHash,
-				t1.slice( m1t1.start, t1.length - m1t1.end ).join( '' ).split( '' )
+				t1.slice( m2t1.start, t1.length - m2t1.end ).join( '' ).split( '' )
 			),
 			annotateData(
 				this.updateHash,
-				m2.slice( m1m2.start, m2.length - m1m2.end ).join( '' ).split( '' )
+				m2.slice( m2t1.start, m2.length - m2t1.end ).join( '' ).split( '' )
 			),
-			m2.slice( m2.length - m1m2.end ).join( '' ).split( '' )
+			m2.slice( m2.length - m2t1.end ).join( '' ).split( '' )
 		);
 		return newData;
 	}
@@ -257,10 +258,9 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 		m2.slice( 0, m1m2.start ).join( '' ).length,
 		m2.slice( 0, m2.length - m1m2.end ).join( '' ).length
 	);
-	oldData = oldTarget.toLinearData();
 	newData = [].concat(
 		t1.slice( 0, startToken ).join( '' ).split( '' ),
-		( start === 0 && end === oldData.length ) ?
+		( startToken === 0 && endToken === t1.length ) ?
 			insertion.toLinearData() :
 			annotateData( this.updateHash, insertion.toLinearData() ),
 		t1.slice( endToken ).join( '' ).split( '' )

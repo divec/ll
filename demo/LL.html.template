@@ -18,7 +18,7 @@
 		<link rel=stylesheet href="demo.ll.css">
 	</head>
 	<body dir="<!-- DIR -->">
-		<h1 style="text-align: center">Utterly bleeding edge demo (loads slowly)</h1>
+		<h1 style="text-align: center">Experimental demo</h1>
 		<div class="ve-demo-editors">
 			<div class="ve-demo-editor">
 				<div class="ve-instance"></div>

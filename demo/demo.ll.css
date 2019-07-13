@@ -4,16 +4,16 @@
  * @copyright 2019 LL team and others; see LICENSE.txt for terms
  */
 
-.ve-demo-editors {
+.ll-demo-editors {
 	display: flex;
 }
 
-.ve-demo-editor {
+.ll-demo-editor {
 	width: 50%;
 	padding: 1em;
 }
 
-.ve-demo-editor .ve-instance {
+.ll-demo-editor .ve-instance {
 	margin: 0 0 1em 0;
 }
 

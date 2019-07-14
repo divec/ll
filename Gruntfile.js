@@ -187,7 +187,8 @@ module.exports = function ( grunt ) {
 								'src/ve.ce.LLConflictAnnotation.js': { functions: 0 },
 								'src/ve.ce.LLUpdateAnnotation.js': { functions: 0 },
 								'src/ve.ui.LLClearDirtyTool.js': { functions: 0 },
-								'src/ll.init.LLTarget.js': { functions: 0 }
+								'src/ll.init.LLTarget.js': { functions: 0 },
+								'src/ll.YandexTranslator.js': { functions: 0, branches: 0 }
 							}
 						}
 					}

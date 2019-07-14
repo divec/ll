@@ -5,15 +5,31 @@
  */
 
 /**
- * Apertium translator
+ * Apertium translator, using apertium-apy
+ *
+ * See https://github.com/apertium/apertium-apy
+ *
  * @abstract
  * @class
  *
  * @constructor
- * @param {string} url URL of apertium-apy instance; see https://github.com/apertium/apertium-apy
+ * @param {Object} [config] Config
+ * @param {string} [config.url] URL of apertium-apy instance
+ * @param {string} [url] URL of apertium-apy instance (deprecated)
  */
-ll.ApertiumTranslator = function LLApertiumTranslator( url ) {
-	this.url = url;
+ll.ApertiumTranslator = function LLApertiumTranslator() {
+	var config;
+	if ( typeof arguments[ 0 ] === 'string' ) {
+		config = { url: arguments[ 0 ] };
+	} else if ( !arguments[ 0 ] ) {
+		throw new Error( 'Need Apertium config' );
+	} else {
+		config = arguments[ 0 ];
+	}
+	if ( !config.url ) {
+		throw new Error( 'Need Apertium URL' );
+	}
+	this.url = config.url;
 	ll.ApertiumTranslator.super.call( this );
 };
 

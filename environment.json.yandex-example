@@ -1,0 +1,6 @@
+{
+	"translatorClass": "YandexTranslator",
+	"translatorConfig": {
+		"key": "<PUT YANDEX API KEY HERE>"
+	}
+}

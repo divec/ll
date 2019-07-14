@@ -27,7 +27,7 @@ ll.demo.preload = function () {
 					.text( 'Unsupported translator class: ' + env.translatorClass );
 				return;
 			}
-			ll.demo.translator = new ll[ env.translatorClass ]( env.translatorUrl );
+			ll.demo.translator = new ll[ env.translatorClass ]( env.translatorConfig || env.translatorUrl );
 		} );
 };
 

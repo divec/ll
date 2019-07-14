@@ -10,11 +10,16 @@
  * @class
  *
  * @constructor
+ * @param {Object} config
+ * @param {string} config.key API key
  */
-ll.YandexTranslator = function LLYandexTranslator() {
+ll.YandexTranslator = function LLYandexTranslator( config ) {
 	this.url = 'https://translate.yandex.net/api/v1.5/tr.json';
-	this.key = '<APIKEY>';
-
+	if ( !config.key ) {
+		throw new Error( 'Need Yandex API key' );
+	}
+	this.key = config.key;
+	// Parent constructor: must be called after setting .url and .key above
 	ll.YandexTranslator.super.call( this );
 };
 

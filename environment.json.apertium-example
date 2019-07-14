@@ -1,0 +1,6 @@
+{
+	"translatorClass": "ApertiumTranslator",
+	"translatorConfig": {
+		"url": "https://apertium.wmflabs.org"
+	}
+}

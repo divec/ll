@@ -19,11 +19,11 @@
 	</head>
 	<body dir="<!-- DIR -->">
 		<h1 style="text-align: center">Experimental demo</h1>
-		<div class="ve-demo-editors">
-			<div class="ve-demo-editor">
+		<div class="ll-demo-editors">
+			<div class="ll-demo-editor">
 				<div class="ve-instance"></div>
 			</div>
-			<div class="ve-demo-editor">
+			<div class="ll-demo-editor">
 				<div class="ve-instance"></div>
 			</div>
 		</div>

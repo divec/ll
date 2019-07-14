@@ -4,17 +4,37 @@
  * @copyright 2019 LL team and others; see LICENSE.txt for terms
  */
 
-( function () {
+ll.demo = {
 	/* eslint-disable no-jquery/no-global-selector */
-	var $firstDemo = $( '.ve-demo-editor' ).eq( 0 ),
-		$secondDemo = $( '.ve-demo-editor' ).eq( 1 ),
-		$firstInstance = $( '.ve-instance' ).eq( 0 ),
-		$secondInstance = $( '.ve-instance' ).eq( 1 ),
-		translator = new ll.ApertiumTranslator( 'http://localhost:2737' );
+	$firstDemo: $( '.ve-demo-editor' ).eq( 0 ),
+	$secondDemo: $( '.ve-demo-editor' ).eq( 1 ),
+	$firstInstance: $( '.ve-instance' ).eq( 0 ),
+	$secondInstance: $( '.ve-instance' ).eq( 1 ),
+	translator: null
+};
 
-	new ve.init.sa.Platform( ve.messagePaths ).getInitializedPromise()
+ll.demo.preload = function () {
+	return $.getJSON( '../environment.json' )
 		.fail( function () {
-			$firstInstance.text( 'Sorry, this browser is not supported.' );
+			ll.demo.$firstInstance.text(
+				'Could not load environment.json. ' +
+				'Be sure to make one using a copy of environment.json.example and modify as needed.'
+			);
+		} )
+		.done( function ( env ) {
+			if ( typeof ll[ env.translatorClass ] !== 'function' ) {
+				ll.demo.$firstInstance
+					.text( 'Unsupported translator class: ' + env.translatorClass );
+				return;
+			}
+			ll.demo.translator = new ll[ env.translatorClass ]( env.translatorUrl );
+		} );
+};
+
+ll.demo.setup = function () {
+	return new ve.init.sa.Platform( ve.messagePaths ).getInitializedPromise()
+		.fail( function () {
+			ll.demo.$firstInstance.text( 'Sorry, this browser is not supported.' );
 		} )
 		.done( function () {
 			var prism,
@@ -25,15 +45,19 @@
 				firstTarget = new ll.init.LLTarget(),
 				secondTarget = new ll.init.LLTarget();
 
-			translator.getParallelLangPairsPromise().then( function ( pairs ) {
+			ll.demo.translator.getParallelLangPairsPromise().then( function ( pairs ) {
 				var langList = OO.unique( pairs.map( function ( pair ) {
 					return pair.source;
 				} ) ).sort();
 				firstLangOptions = langList.map( function ( lang ) {
-					return new OO.ui.MenuOptionWidget( { data: lang, label: ve.init.platform.getLanguageName( lang ) } );
+					return new OO.ui.MenuOptionWidget( {
+						data: lang, label: ve.init.platform.getLanguageName( lang )
+					} );
 				} );
 				secondLangOptions = langList.map( function ( lang ) {
-					return new OO.ui.MenuOptionWidget( { data: lang, label: ve.init.platform.getLanguageName( lang ) } );
+					return new OO.ui.MenuOptionWidget( {
+						data: lang, label: ve.init.platform.getLanguageName( lang )
+					} );
 				} );
 				firstLangDropdown.getMenu().addItems( firstLangOptions );
 				secondLangDropdown.getMenu().addItems( secondLangOptions );
@@ -43,14 +67,15 @@
 			} );
 
 			function onSelect( changedLangDropdown, otherLangDropdown, changedTarget ) {
-				translator.getLangPairsPromise().then( function ( langPairs ) {
+				ll.demo.translator.getLangPairsPromise().then( function ( langPairs ) {
 					changedLangDropdown.getMenu().on( 'select', function ( i ) {
 						var lang = i.getData(),
 							dir = ve.init.platform.getLanguageDirection( lang ),
 							surface = changedTarget.surface;
 						otherLangDropdown.getMenu().getItems().forEach( function ( j ) {
 							j.$element.css( 'opacity',
-								translator.pairSupported( langPairs, lang, j.getData() ) ? 1 : 0.5
+								ll.demo.translator.pairSupported( langPairs, lang, j.getData() ) ?
+									1 : 0.5
 							);
 						} );
 						// This is ugly but you are unlikely to change language mid document.
@@ -65,8 +90,8 @@
 			onSelect( firstLangDropdown, secondLangDropdown, firstTarget );
 			onSelect( secondLangDropdown, firstLangDropdown, secondTarget );
 
-			$firstDemo.append( firstLangDropdown.$element );
-			$secondDemo.append( secondLangDropdown.$element );
+			ll.demo.$firstDemo.append( firstLangDropdown.$element );
+			ll.demo.$secondDemo.append( secondLangDropdown.$element );
 
 			prism = new ll.Prism(
 				{
@@ -93,13 +118,15 @@
 					<li>Haga clic en “✓” para confirmar la traducción.</li></ul>\
 					'
 				},
-				translator
+				ll.demo.translator
 			);
-			$firstInstance.append( firstTarget.$element );
-			$secondInstance.append( secondTarget.$element );
+			ll.demo.$firstInstance.append( firstTarget.$element );
+			ll.demo.$secondInstance.append( secondTarget.$element );
 			firstTarget.clearSurfaces();
 			firstTarget.addSurface( prism.firstSurface );
 			secondTarget.clearSurfaces();
 			secondTarget.addSurface( prism.secondSurface );
 		} );
-}() );
+};
+
+ll.demo.preload().then( ll.demo.setup );

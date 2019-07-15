@@ -6,8 +6,8 @@
 
 ll.demo = {
 	/* eslint-disable no-jquery/no-global-selector */
-	$firstDemo: $( '.ve-demo-editor' ).eq( 0 ),
-	$secondDemo: $( '.ve-demo-editor' ).eq( 1 ),
+	$firstDemo: $( '.ll-demo-editor' ).eq( 0 ),
+	$secondDemo: $( '.ll-demo-editor' ).eq( 1 ),
 	$firstInstance: $( '.ve-instance' ).eq( 0 ),
 	$secondInstance: $( '.ve-instance' ).eq( 1 ),
 	translator: null
@@ -18,7 +18,7 @@ ll.demo.preload = function () {
 		.fail( function () {
 			ll.demo.$firstInstance.text(
 				'Could not load environment.json. ' +
-				'Be sure to make one using a copy of environment.json.example and modify as needed.'
+				'Be sure to make one using a copy of environment.json.apertium-example or environment.json.yandex-example and modify as needed.'
 			);
 		} )
 		.done( function ( env ) {

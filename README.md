@@ -14,8 +14,8 @@
 - `cd lib/ve`
 - `npm install`
 - `grunt build`
-- Download, install and run [Apertium-APy](https://github.com/apertium/apertium-apy) .
- (or alternatively, edit `demo/demo.ll.js` and change `http://localhost:2737/translate` to point to a public Apertium-APy instance)
+- `cp environment.json.apertium-example environment.json`
+ (or alternatively, use `environment.json.yandex-example` and put in your Yandex API key)
 - Run a local static webserver in the repository directory: `python3 -m http.server`
 - Browse to `http://localhost:8000/demo/LL.html`
 

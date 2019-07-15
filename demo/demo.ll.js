@@ -73,9 +73,8 @@ ll.demo.setup = function () {
 							dir = ve.init.platform.getLanguageDirection( lang ),
 							surface = changedTarget.surface;
 						otherLangDropdown.getMenu().getItems().forEach( function ( j ) {
-							j.$element.css( 'opacity',
-								ll.demo.translator.pairSupported( langPairs, lang, j.getData() ) ?
-									1 : 0.5
+							j.$element.toggleClass( 'll-language-unsupported',
+								!ll.demo.translator.pairSupported( langPairs, lang, j.getData() )
 							);
 						} );
 						// This is ugly but you are unlikely to change language mid document.

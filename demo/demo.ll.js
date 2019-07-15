@@ -6,8 +6,8 @@
 
 ll.demo = {
 	/* eslint-disable no-jquery/no-global-selector */
-	$firstDemo: $( '.ve-demo-editor' ).eq( 0 ),
-	$secondDemo: $( '.ve-demo-editor' ).eq( 1 ),
+	$firstDemo: $( '.ll-demo-editor' ).eq( 0 ),
+	$secondDemo: $( '.ll-demo-editor' ).eq( 1 ),
 	$firstInstance: $( '.ve-instance' ).eq( 0 ),
 	$secondInstance: $( '.ve-instance' ).eq( 1 ),
 	translator: null
@@ -18,7 +18,7 @@ ll.demo.preload = function () {
 		.fail( function () {
 			ll.demo.$firstInstance.text(
 				'Could not load environment.json. ' +
-				'Be sure to make one using a copy of environment.json.example and modify as needed.'
+				'Be sure to make one using a copy of environment.json.apertium-example or environment.json.yandex-example and modify as needed.'
 			);
 		} )
 		.done( function ( env ) {
@@ -73,9 +73,8 @@ ll.demo.setup = function () {
 							dir = ve.init.platform.getLanguageDirection( lang ),
 							surface = changedTarget.surface;
 						otherLangDropdown.getMenu().getItems().forEach( function ( j ) {
-							j.$element.css( 'opacity',
-								ll.demo.translator.pairSupported( langPairs, lang, j.getData() ) ?
-									1 : 0.5
+							j.$element.toggleClass( 'll-language-unsupported',
+								!ll.demo.translator.pairSupported( langPairs, lang, j.getData() )
 							);
 						} );
 						// This is ugly but you are unlikely to change language mid document.

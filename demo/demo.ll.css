@@ -17,6 +17,10 @@
 	margin: 0 0 1em 0;
 }
 
+.ll-language-unsupported {
+	opacity: 0.5;
+}
+
 /* XXX should this be in ve.ce.ContentBranchNode.css? */
 .ve-ce-contentBranchNode-ll-dirty {
 	background-color: #fae168;

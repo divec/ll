@@ -21,6 +21,7 @@
 			"src/ll.Translator.js",
 			"src/ll.ApertiumTranslator.js",
 			"src/ll.YandexTranslator.js",
+			"src/ll.GoogleTranslator.js",
 			"src/ll.Prism.js"
 		]
 	},

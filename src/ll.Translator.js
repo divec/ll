@@ -21,6 +21,10 @@ OO.initClass( ll.Translator );
 
 /* Static methods */
 
+ll.Translator.static.outerSeparator = ':!!!:';
+
+ll.Translator.static.innerSeparator = ':!!:';
+
 /**
  * Bundle groups of strings for translation in one go
  *
@@ -29,8 +33,8 @@ OO.initClass( ll.Translator );
  */
 ll.Translator.static.bundle = function ( groups ) {
 	return groups.map( function ( group ) {
-		return group.join( '\n:!!:\n' );
-	} ).join( '\n:!!!:\n' );
+		return group.join( '\n' + this.innerSeparator + '\n' );
+	} ).join( '\n' + this.outerSeparator + '\n' );
 };
 
 /**
@@ -40,9 +44,14 @@ ll.Translator.static.bundle = function ( groups ) {
  * @return {Array[]} Array of Arrays of strings
  */
 ll.Translator.static.unbundle = function ( bundled ) {
-	return bundled.split( /\s*:!!!:\s*/ ).map( function ( groupString ) {
-		return groupString.split( /\s*:!!:\s*/ );
-	} );
+	// TODO: Regex-escape the separator strings
+	var innerPattern = new RegExp( '\\s*' + this.innerSeparator + '\\s*' ),
+		outerPattern = new RegExp( '\\s*' + this.outerSeparator + '\\s*' );
+	return bundled.split( outerPattern ).map(
+		function ( groupString ) {
+			return groupString.split( innerPattern );
+		}
+	);
 };
 
 /* Instance methods */

@@ -1,0 +1,6 @@
+{
+	"translatorClass": "GoogleTranslator",
+	"translatorConfig": {
+		"key": "<PUT GOOGLE API KEY HERE>"
+	}
+}

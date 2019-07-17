@@ -44,7 +44,7 @@ ll.GoogleTranslator.static.stack = [];
 /**
  * Interval timer for processing the queue.
  * @static
- * @type {Array}
+ * @type {number|null}
  */
 ll.GoogleTranslator.static.timer = null;
 
@@ -54,8 +54,10 @@ ll.GoogleTranslator.static.timer = null;
  * Clears the processing interval when the queue is empty.
  */
 ll.GoogleTranslator.static.process = function () {
-	var task = this.stack.shift();
-	if ( this.stack.length === 0 ) {
+	var task = this.stack.pop();
+	// Remove the rest
+	this.stack.length = 0;
+	if ( task ) {
 		task();
 		clearInterval( this.timer );
 		this.timer = null;
@@ -75,7 +77,7 @@ ll.GoogleTranslator.static.queue = function ( task ) {
 	var deferred = $.Deferred();
 	this.stack.push( task.bind( null, deferred.resolve, deferred.reject ) );
 	if ( this.timer === null ) {
-		this.timer = setInterval( this.process.bind( ll.GoogleTranslator.static ), 100 );
+		this.timer = setInterval( this.process.bind( this ), 100 );
 	}
 	return deferred.promise();
 };

@@ -44,6 +44,7 @@ ll.Translator.static.bundle = function ( groups ) {
  * @return {Array[]} Array of Arrays of strings
  */
 ll.Translator.static.unbundle = function ( bundled ) {
+	// TODO: Regex-escape the separator strings
 	var innerPattern = new RegExp( '\\s*' + this.innerSeparator + '\\s*' ),
 		outerPattern = new RegExp( '\\s*' + this.outerSeparator + '\\s*' );
 	return bundled.split( outerPattern ).map(

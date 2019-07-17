@@ -32,8 +32,9 @@ ll.Translator.static.innerSeparator = ':!!:';
  * @return {string} The groups, joined with separators that break sentences
  */
 ll.Translator.static.bundle = function ( groups ) {
+	var innerSeparator = this.innerSeparator;
 	return groups.map( function ( group ) {
-		return group.join( '\n' + this.innerSeparator + '\n' );
+		return group.join( '\n' + innerSeparator + '\n' );
 	} ).join( '\n' + this.outerSeparator + '\n' );
 };
 

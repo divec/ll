@@ -92,9 +92,12 @@ ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
 			key: this.key
 		}
 	} ).then( function ( data ) {
-		var list = [];
-		data.data.languages.forEach( function ( source ) {
-			data.data.languages.forEach( function ( target ) {
+		var list = [],
+			languages = data.data.languages.map( function ( obj ) {
+				return obj.language;
+			} );
+		languages.forEach( function ( source ) {
+			languages.forEach( function ( target ) {
 				if ( source !== target ) {
 					list.push( { source: source, target: target } );
 				}

@@ -32,6 +32,31 @@ ll.demo.preload = function () {
 };
 
 ll.demo.setup = function () {
+	/**
+	 * Automatically disable spellcheck if the surface isn't in a browser supported language.
+	 *
+	 * This is needed because it turns out that browsers don't have spellcheck on hand for every
+	 * language in existenece - fair enough - so they just use whatever spellcheck language they
+	 * do have on hand for all contentEditable elements regardless of the lang attribute - WAT?!
+	 *
+	 * @param {ve.Surface} surface Surface to act on
+	 */
+	function autoDisableSpellcheck( surface ) {
+		var lang = surface.getView().getDocument().getLang(),
+			$root = surface.getView().$attachedRootNode,
+			supported = navigator.languages.indexOf( lang ) !== -1,
+			enabled = $root.prop( 'spellcheck' );
+		if ( supported !== enabled ) {
+			// Toggle spellcheck
+			$root.prop( 'spellcheck', supported );
+			// If surface is focused, cycle focus to reset the spellcheck system
+			if ( $root.is( ':focus' ) ) {
+				$root.trigger( 'blur' );
+				$root.trigger( 'focus' );
+			}
+		}
+	}
+
 	return new ve.init.sa.Platform( ve.messagePaths ).getInitializedPromise()
 		.fail( function () {
 			ll.demo.$firstInstance.text( 'Sorry, this browser is not supported.' );
@@ -82,6 +107,7 @@ ll.demo.setup = function () {
 						surface.getModel().getDocument().dir = dir;
 						surface.getView().getDocument().setLang( lang );
 						surface.getView().getDocument().setDir( dir );
+						autoDisableSpellcheck( surface );
 					} );
 				} );
 			}
@@ -125,6 +151,9 @@ ll.demo.setup = function () {
 			firstTarget.addSurface( prism.firstSurface );
 			secondTarget.clearSurfaces();
 			secondTarget.addSurface( prism.secondSurface );
+
+			autoDisableSpellcheck( firstTarget.getSurface() );
+			autoDisableSpellcheck( secondTarget.getSurface() );
 		} );
 };
 

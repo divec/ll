@@ -1,6 +1,6 @@
 # LL — two-way parallel translation
 
-![LL logo](https://raw.githubusercontent.com/divec/ll/master/demo/ll-logo.png)
+![LL logo](https://raw.githubusercontent.com/divec/ll/master/demo/images/logo.png)
 
 ## Getting started
 

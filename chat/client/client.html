@@ -1,0 +1,30 @@
+<!doctype html>
+
+<html>
+	<head>
+		<title>LL Chat</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="client.css">
+	</head>
+	<body>
+		<div id="app"></div>
+		<script src="lib/jquery.js"></script>
+		<script src="lib/socket.io.js"></script>
+		<script src="lib/incremental-dom.js"></script>
+		<script src="lib/renderer.js"></script>
+		<script src="src/Conversation.js"></script>
+		<script src="src/AppComponent.js"></script>
+		<script src="src/ComposerComponent.js"></script>
+		<script src="src/LogComponent.js"></script>
+		<script>
+			const url = new URL( location );
+			new Renderer(
+				new AppComponent( {
+					user: url.searchParams.get( 'user' ),
+					lang: url.searchParams.get( 'lang' )
+				} ),
+				document.querySelector( '#app' )
+			);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,39 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+iframe {
+	float: left;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	border: none;
+	width: 50%;
+	height: 50%;
+	border: solid 1px #ddd;
+	box-sizing: border-box;
+}
+iframe:nth-child(1) {
+	left: 0;
+	right: 50%;
+	top: 0;
+	bottom: 50%;
+}
+iframe:nth-child(2) {
+	left: 50%;
+	right: 0;
+	top: 0;
+	bottom: 50%;
+}
+iframe:nth-child(3) {
+	left: 0;
+	right: 50%;
+	top: 50%;
+	bottom: 0;
+}
+iframe:nth-child(4)  {
+	left: 50%;
+	right: 0;
+	top: 50%;
+	bottom: 0;
+}

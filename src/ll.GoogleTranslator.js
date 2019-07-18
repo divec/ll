@@ -27,6 +27,16 @@ ll.GoogleTranslator = function LLGoogleTranslator( config ) {
 
 OO.inheritClass( ll.GoogleTranslator, ll.Translator );
 
+/* Static properties */
+
+ll.GoogleTranslator.static.codeFromIso = {
+	// Missing from ULS-data: Hmong (hmn)
+	he: 'iw',
+	jv: 'jw',
+	'zh-hans': 'zh-CN',
+	'zh-hant': 'zh-TW'
+};
+
 // TODO: Make separators more robust.
 // Google messes with multi-character separators, usually by adding spaces betweem unalike character
 // repetitions, such as ":!!:" becoming ": !!:". Using more obscure characters works, but is still
@@ -84,6 +94,9 @@ ll.GoogleTranslator.static.queue = function ( task ) {
 
 /* Instance methods */
 
+/**
+ * @inheritdoc
+ */
 ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
 	return $.ajax( {
 		url: this.url + '/language/translate/v2/languages',
@@ -99,6 +112,7 @@ ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
 		languages.forEach( function ( source ) {
 			languages.forEach( function ( target ) {
 				if ( source !== target ) {
+					// Mapping to ISO is done by parent
 					list.push( { source: source, target: target } );
 				}
 			} );
@@ -108,11 +122,7 @@ ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
 };
 
 /**
- * Translate plaintext
- * @param {string} sourceLang Source language code
- * @param {string} targetLang Target language code
- * @param {string} text The text to translate
- * @return {Promise} Promise resolving with the translated text
+ * @inheritdoc
  */
 ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
 	var translator = this;
@@ -123,8 +133,8 @@ ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, target
 			datatype: 'json',
 			data: {
 				key: translator.key,
-				source: sourceLang,
-				target: targetLang,
+				source: translator.getCodeFromIso( sourceLang ),
+				target: translator.getCodeFromIso( targetLang ),
 				q: text
 			}
 		} ).fail( function ( error ) {

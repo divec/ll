@@ -12,7 +12,15 @@
  * @constructor
  */
 ll.Translator = function LLTranslator() {
-	this.langPairsPromise = this.fetchLangPairsPromise();
+	var translator = this;
+	this.langPairsPromise = this.fetchLangPairsPromise().then( function ( pairs ) {
+		return pairs.map( function ( pair ) {
+			return {
+				source: translator.getIsoFromCode( pair.source ),
+				target: translator.getIsoFromCode( pair.target )
+			};
+		} );
+	} );
 };
 
 /* Initialization */
@@ -24,6 +32,13 @@ OO.initClass( ll.Translator );
 ll.Translator.static.outerSeparator = ':!!!:';
 
 ll.Translator.static.innerSeparator = ':!!:';
+
+/**
+ * Mapping from ISO code to any non-standard codes.
+ *
+ * @type {Object}
+ */
+ll.Translator.static.codeFromIso = {};
 
 /**
  * Bundle groups of strings for translation in one go
@@ -68,13 +83,22 @@ ll.Translator.static.unbundle = function ( bundled ) {
 ll.Translator.prototype.translate = null;
 
 /**
- * Get available language pairs
+ * Get available language pairs, using ISO codes
+ *
  * @return {Promise} Promise resolving with list of [{source:'source',target:'target'}]
  */
 ll.Translator.prototype.getLangPairsPromise = function () {
 	return this.langPairsPromise;
 };
 
+/**
+ * Fetch the available language pairs.
+ *
+ * Non-standard codes will get converted by #getIsoFromCode.
+ *
+ * @method
+ * @return {Promise} Promise resolving with list of [{source:'source',target:'target'}]
+ */
 ll.Translator.prototype.fetchLangPairsPromise = null;
 
 ll.Translator.prototype.getParallelLangPairsPromise = function () {
@@ -89,6 +113,14 @@ ll.Translator.prototype.getParallelLangPairsPromise = function () {
 	} );
 };
 
+/**
+ * Check if a language pair is supported
+ *
+ * @param {Array} langPairs Result of #getLangPairsPromise promise
+ * @param {string} source Source language ISO code
+ * @param {string} target Target language ISO code
+ * @return {boolean} Pair is supported
+ */
 ll.Translator.prototype.pairSupported = function ( langPairs, source, target ) {
 	return langPairs.some( function ( pair ) {
 		return pair.source === source && pair.target === target;
@@ -96,10 +128,42 @@ ll.Translator.prototype.pairSupported = function ( langPairs, source, target ) {
 };
 
 /**
+ * Get the translator's language code from the ISO code
+ *
+ * @param {string} iso ISO language code
+ * @return {string} Translator's language code
+ */
+ll.Translator.prototype.getCodeFromIso = function ( iso ) {
+	return this.constructor.static.codeFromIso[ iso ] || iso;
+};
+
+/**
+ * Get the ISO code from the translator's language code
+ *
+ * @param {string} code Translator's language code
+ * @return {string} ISO language code
+ */
+ll.Translator.prototype.getIsoFromCode = function ( code ) {
+	var codeFromIso, isoFromCode;
+
+	// Build the reverse mapping of codeFromIso and cache
+	if ( !this.constructor.static.isoFromCode ) {
+		this.constructor.static.isoFromCode = {};
+		codeFromIso = this.constructor.static.codeFromIso;
+		isoFromCode = this.constructor.static.isoFromCode;
+
+		Object.keys( codeFromIso ).forEach( function ( iso ) {
+			isoFromCode[ codeFromIso[ iso ] ] = iso;
+		} );
+	}
+	return this.constructor.static.isoFromCode[ code ] || code;
+};
+
+/**
  * Translate plaintext
  *
- * @param {string} sourceLang Source language code
- * @param {string} targetLang Target language code
+ * @param {string} sourceLang Source language ISO code
+ * @param {string} targetLang Target language ISO code
  * @param {string} text The text to translate
  * @return {Promise} Promise resolving with the translated text
  */
@@ -116,8 +180,8 @@ ll.Translator.prototype.translatePlaintext = function ( sourceLang, targetLang )
 /**
  * Translate chunked text
  *
- * @param {string} sourceLang Source language code
- * @param {string} targetLang Target language code
+ * @param {string} sourceLang Source language ISO code
+ * @param {string} targetLang Target language ISO code
  * @param {ll.ChunkedText[]} sourceTexts The text to translate
  * @return {Promise} Promise resolving with the translated text
  */

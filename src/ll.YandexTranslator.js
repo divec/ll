@@ -59,6 +59,7 @@ ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
  * @inheritdoc
  */
 ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
+	var translator = this;
 	return $.ajax( {
 		url: this.url + '/translate',
 		method: 'post',

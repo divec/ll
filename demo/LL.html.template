@@ -11,6 +11,10 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 		<meta name="google" content="notranslate" />
+		<link rel="icon" type="image/ico" href="images/favicon.ico" />
+		<link rel="icon" type="image/png" href="images/favicon-16.png" sizes="16x16" />
+		<link rel="icon" type="image/png" href="images/favicon-32.png" sizes="32x32" />
+
 		<title>LL two-way parallel translation</title>
 
 <!-- STYLES -->

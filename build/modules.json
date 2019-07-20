@@ -42,7 +42,7 @@
 			"tests/ve.ui.LLClearDirtyCommand.test.js"
 		],
 		"dependencies": [
-			"visualEditor.test",
+			"visualEditor.desktop.standalone.apex.dist",
 			"ll"
 		]
 	},

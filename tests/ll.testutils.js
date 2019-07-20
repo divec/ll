@@ -26,6 +26,12 @@ ll.fakeAjaxApertium = function ( req ) {
 
 };
 
+// Create a global platform and target
+// eslint-disable-next-line no-new
+new ve.init.sa.Platform();
+// eslint-disable-next-line no-new
+new ll.init.LLTarget();
+
 /**
  * Fake translator that upper-cases and doubles each char
  *

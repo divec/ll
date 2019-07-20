@@ -182,15 +182,12 @@ module.exports = function ( grunt ) {
 							statements: 20,
 							lines: 20,
 							excludes: [
-							],
-							overrides: {
-								'src/ve.ce.LLConflictAnnotation.js': { functions: 0 },
-								'src/ve.ce.LLUpdateAnnotation.js': { functions: 0 },
-								'src/ve.ui.LLClearDirtyTool.js': { functions: 0 },
-								'src/ll.init.LLTarget.js': { functions: 0 },
-								'src/ll.GoogleTranslator.js': { functions: 0, branches: 0 },
-								'src/ll.YandexTranslator.js': { functions: 0, branches: 0 }
-							}
+								'src/ve.ce.LLConflictAnnotation.js',
+								'src/ve.ce.LLUpdateAnnotation.js',
+								'src/ve.ce.LinearEnterKeyDownHandler.ext.js',
+								'src/ll.YandexTranslator.js',
+								'src/ll.GoogleTranslator.js'
+							]
 						}
 					}
 				}

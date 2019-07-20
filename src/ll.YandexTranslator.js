@@ -33,6 +33,9 @@ ll.YandexTranslator.static.innerSeparator = ':!!:';
 
 /* Instance methods */
 
+/**
+ * @inheritdoc
+ */
 ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
 	return $.ajax( {
 		url: this.url + '/getLangs',
@@ -43,6 +46,7 @@ ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
 	} ).then( function ( data ) {
 		return data.dirs.map( function ( pair ) {
 			var parts = pair.split( '-' );
+			// Mapping to ISO is done by parent
 			return {
 				source: parts[ 0 ],
 				target: parts[ 1 ]
@@ -52,20 +56,17 @@ ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
 };
 
 /**
- * Translate plaintext
- * @param {string} sourceLang Source language code
- * @param {string} targetLang Target language code
- * @param {string} text The text to translate
- * @return {Promise} Promise resolving with the translated text
+ * @inheritdoc
  */
 ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
+	var translator = this;
 	return $.ajax( {
 		url: this.url + '/translate',
 		method: 'post',
 		datatype: 'json',
 		data: {
 			key: this.key,
-			lang: sourceLang + '-' + targetLang,
+			lang: translator.getCodeFromIso( sourceLang ) + '-' + translator.getCodeFromIso( targetLang ),
 			text: text
 		}
 	} ).then( function ( data ) {

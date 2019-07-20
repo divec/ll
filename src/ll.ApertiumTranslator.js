@@ -39,7 +39,7 @@ OO.inheritClass( ll.ApertiumTranslator, ll.Translator );
 
 /* Static properties */
 
-ll.ApertiumTranslator.static.apertiumFromIso = {
+ll.ApertiumTranslator.static.codeFromIso = {
 	af: 'afr',
 	an: 'arg',
 	ar: 'ara',
@@ -88,42 +88,31 @@ ll.ApertiumTranslator.static.apertiumFromIso = {
 	ur: 'urd'
 };
 
-ll.ApertiumTranslator.static.isoFromApertium = ( function () {
-	var apertiumFromIso = ll.ApertiumTranslator.static.apertiumFromIso,
-		isoFromApertium = {};
-	Object.keys( apertiumFromIso ).forEach( function ( iso ) {
-		isoFromApertium[ apertiumFromIso[ iso ] ] = iso;
-	} );
-	return isoFromApertium;
-}() );
-
 /* Instance methods */
 
+/**
+ * @inheritdoc
+ */
 ll.ApertiumTranslator.prototype.fetchLangPairsPromise = function () {
 	return $.ajax( {
 		url: this.url + '/list',
 		datatype: 'json'
 	} ).then( function ( data ) {
-		var isoFromApertium = ll.ApertiumTranslator.static.isoFromApertium;
 		return data.responseData.map( function ( pair ) {
+			// Mapping to ISO is done by parent
 			return {
-				source: isoFromApertium[ pair.sourceLanguage ],
-				target: isoFromApertium[ pair.targetLanguage ]
+				source: pair.sourceLanguage,
+				target: pair.targetLanguage
 			};
 		} );
 	} );
 };
 
 /**
- * Translate plaintext
- * @param {string} sourceLang Source language code
- * @param {string} targetLang Target language code
- * @param {string} text The text to translate
- * @return {Promise} Promise resolving with the translated text
+ * @inheritdoc
  */
 ll.ApertiumTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
-	var apertiumFromIso = this.constructor.static.apertiumFromIso,
-		translator = this;
+	var translator = this;
 
 	return ll.ApertiumTranslator.super.prototype.translatePlaintext.apply( this, arguments ).then( function () {
 		return $.ajax( {
@@ -131,7 +120,7 @@ ll.ApertiumTranslator.prototype.translatePlaintext = function ( sourceLang, targ
 			datatype: 'json',
 			data: {
 				markUnknown: 'no',
-				langpair: apertiumFromIso[ sourceLang ] + '|' + apertiumFromIso[ targetLang ],
+				langpair: translator.getCodeFromIso( sourceLang ) + '|' + translator.getCodeFromIso( targetLang ),
 				q: text
 			}
 		} ).then( function ( data ) {

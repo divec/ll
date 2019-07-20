@@ -88,6 +88,28 @@ ll.ApertiumTranslator.static.codeFromIso = {
 	ur: 'urd'
 };
 
+/* Static methods */
+
+/**
+ * Bundle texts for translation in one go
+ *
+ * @param {string[]} texts
+ * @return {string} The texts, joined with separators that break sentences
+ */
+ll.ApertiumTranslator.static.bundle = function ( texts ) {
+	return texts.join( '\n:!!:\n' );
+};
+
+/**
+ * Unbundle texts translated in one go
+ *
+ * @param {string} bundled Bundled texts, as returned by #bundle
+ * @return {strings[]} The unbundled texts
+ */
+ll.ApertiumTranslator.static.unbundle = function ( bundled ) {
+	return bundled.split( /\n:!!:\n/ );
+};
+
 /* Instance methods */
 
 /**
@@ -111,10 +133,12 @@ ll.ApertiumTranslator.prototype.fetchLangPairsPromise = function () {
 /**
  * @inheritdoc
  */
-ll.ApertiumTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
-	var translator = this;
+ll.ApertiumTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, texts ) {
+	var text,
+		translator = this;
+	text = this.constructor.static.bundle( texts );
 
-	return ll.ApertiumTranslator.super.prototype.translatePlaintext.apply( this, arguments ).then( function () {
+	return this.checkLangPair( sourceLang, targetLang ).then( function () {
 		return $.ajax( {
 			url: translator.url + '/translate',
 			datatype: 'json',
@@ -123,8 +147,8 @@ ll.ApertiumTranslator.prototype.translatePlaintext = function ( sourceLang, targ
 				langpair: translator.getCodeFromIso( sourceLang ) + '|' + translator.getCodeFromIso( targetLang ),
 				q: text
 			}
-		} ).then( function ( data ) {
-			return data.responseData.translatedText;
 		} );
+	} ).then( function ( data ) {
+		return translator.constructor.static.unbundle( data.responseData.translatedText );
 	} );
 };

@@ -37,13 +37,6 @@ ll.GoogleTranslator.static.codeFromIso = {
 	'zh-hant': 'zh-TW'
 };
 
-// TODO: Make separators more robust.
-// Google messes with multi-character separators, usually by adding spaces betweem unalike character
-// repetitions, such as ":!!:" becoming ": !!:". Using more obscure characters works, but is still
-// inherently fragile.
-ll.GoogleTranslator.static.outerSeparator = '☆';
-ll.GoogleTranslator.static.innerSeparator = '️★';
-
 /**
  * List of queued tasks.
  * @static
@@ -124,7 +117,7 @@ ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
 /**
  * @inheritdoc
  */
-ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
+ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, texts ) {
 	var translator = this;
 	return ll.GoogleTranslator.static.queue( function ( resolve, reject ) {
 		$.ajax( {
@@ -135,12 +128,15 @@ ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, target
 				key: translator.key,
 				source: translator.getCodeFromIso( sourceLang ),
 				target: translator.getCodeFromIso( targetLang ),
-				q: text
-			}
+				q: texts
+			},
+			traditional: true
 		} ).fail( function ( error ) {
 			reject( error );
 		} ).done( function ( data ) {
-			resolve( data.data.translations[ 0 ].translatedText );
+			resolve( data.data.translations.map( function ( translation ) {
+				return translation.translatedText;
+			} ) );
 		} );
 	} );
 };

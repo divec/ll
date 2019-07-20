@@ -58,7 +58,7 @@ ll.YandexTranslator.prototype.fetchLangPairsPromise = function () {
 /**
  * @inheritdoc
  */
-ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, text ) {
+ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, texts ) {
 	var translator = this;
 	return $.ajax( {
 		url: this.url + '/translate',
@@ -67,9 +67,10 @@ ll.YandexTranslator.prototype.translatePlaintext = function ( sourceLang, target
 		data: {
 			key: this.key,
 			lang: translator.getCodeFromIso( sourceLang ) + '-' + translator.getCodeFromIso( targetLang ),
-			text: text
-		}
+			text: texts
+		},
+		traditional: true
 	} ).then( function ( data ) {
-		return data.text[ 0 ];
+		return data.text;
 	} );
 };

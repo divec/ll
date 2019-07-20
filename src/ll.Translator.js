@@ -29,46 +29,12 @@ OO.initClass( ll.Translator );
 
 /* Static methods */
 
-ll.Translator.static.outerSeparator = ':!!!:';
-
-ll.Translator.static.innerSeparator = ':!!:';
-
 /**
  * Mapping from ISO code to any non-standard codes.
  *
  * @type {Object}
  */
 ll.Translator.static.codeFromIso = {};
-
-/**
- * Bundle groups of strings for translation in one go
- *
- * @param {Array[]} groups Array of Arrays of strings
- * @return {string} The groups, joined with separators that break sentences
- */
-ll.Translator.static.bundle = function ( groups ) {
-	var innerSeparator = this.innerSeparator;
-	return groups.map( function ( group ) {
-		return group.join( '\n' + innerSeparator + '\n' );
-	} ).join( '\n' + this.outerSeparator + '\n' );
-};
-
-/**
- * Unbundle groups of strings translated in one go
- *
- * @param {string} bundled Bundled groups, as returned by #bundle
- * @return {Array[]} Array of Arrays of strings
- */
-ll.Translator.static.unbundle = function ( bundled ) {
-	// TODO: Regex-escape the separator strings
-	var innerPattern = new RegExp( '\\s*' + this.innerSeparator + '\\s*' ),
-		outerPattern = new RegExp( '\\s*' + this.outerSeparator + '\\s*' );
-	return bundled.split( outerPattern ).map(
-		function ( groupString ) {
-			return groupString.split( innerPattern );
-		}
-	);
-};
 
 /* Instance methods */
 
@@ -160,14 +126,13 @@ ll.Translator.prototype.getIsoFromCode = function ( code ) {
 };
 
 /**
- * Translate plaintext
+ * Check language pair is supported
  *
  * @param {string} sourceLang Source language ISO code
  * @param {string} targetLang Target language ISO code
- * @param {string} text The text to translate
- * @return {Promise} Promise resolving with the translated text
+ * @return {Promise} Promise resolving with undefined if pair is supported, else rejecting
  */
-ll.Translator.prototype.translatePlaintext = function ( sourceLang, targetLang ) {
+ll.Translator.prototype.checkLangPair = function ( sourceLang, targetLang ) {
 	var translator = this;
 
 	return this.getLangPairsPromise().then( function ( langPairs ) {
@@ -178,6 +143,16 @@ ll.Translator.prototype.translatePlaintext = function ( sourceLang, targetLang )
 };
 
 /**
+ * @method
+ * @abstract
+ * @param {string} sourceLang Source language code
+ * @param {string} targetLang Target language code
+ * @param {string[]} texts The texts to translate
+ * @return {Promise} Promise resolving with a string[] of the translated texts
+ */
+ll.Translator.prototype.translatePlaintext = null;
+
+/**
  * Translate chunked text
  *
  * @param {string} sourceLang Source language ISO code
@@ -186,8 +161,7 @@ ll.Translator.prototype.translatePlaintext = function ( sourceLang, targetLang )
  * @return {Promise} Promise resolving with the translated text
  */
 ll.Translator.prototype.translate = function ( sourceLang, targetLang, sourceTexts ) {
-	var plexSourceGroups,
-		translator = this;
+	var plexSourceGroups;
 
 	/**
 	 * From chunked text, derive a list of plaintext strings, one with each annotated chunk
@@ -214,14 +188,43 @@ ll.Translator.prototype.translate = function ( sourceLang, targetLang, sourceTex
 		return outputList;
 	}
 
+	/**
+	 * Flatten an array of arrays
+	 *
+	 * @param {Array[]} arrays The array of arrays
+	 * @return {Array} The flattened array
+	 */
+	function flatten( arrays ) {
+		return Array.prototype.concat.apply( [], arrays );
+	}
+
+	/**
+	 * Unflatten an array, according to the lengths in a template array
+	 *
+	 * @param {Array} flattenedArray The flattened array
+	 * @param {Array[]} template Array of arrays that would flatten to the same total length
+	 * @return {Array[]} Array of arrays, with lengths matching template
+	 */
+	function unflatten( flattenedArray, template ) {
+		var i, iLen, tLen,
+			array = [],
+			pos = 0;
+		for ( i = 0, iLen = template.length; i < iLen; i++ ) {
+			tLen = template[ i ].length;
+			array.push( flattenedArray.slice( pos, pos + tLen ) );
+			pos += tLen;
+		}
+		return array;
+	}
+
 	plexSourceGroups = sourceTexts.map( getPlexGroup );
 
 	return this.translatePlaintext(
 		sourceLang,
 		targetLang,
-		this.constructor.static.bundle( plexSourceGroups )
-	).then( function ( modifiedTargetsBundle ) {
-		var modifiedTargetsList = translator.constructor.static.unbundle( modifiedTargetsBundle );
+		flatten( plexSourceGroups )
+	).then( function ( texts ) {
+		var modifiedTargetsList = unflatten( texts, plexSourceGroups );
 		return modifiedTargetsList.map( function ( modifiedTargets, i ) {
 			var targetPlainText = modifiedTargets.pop();
 			return ll.adaptAnnotationsWithModifiedTargets( sourceTexts[ i ], targetPlainText, modifiedTargets );

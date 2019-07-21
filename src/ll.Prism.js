@@ -192,9 +192,9 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  *
  * This is fundamentally the same logic as ve.dm.Change.static.rebaseTransactions
  *
- * @param {Object} oldMachineTranslation Machine-translated chunked old source
- * @param {Object} newMachineTranslation Machine-translated chunked current source
- * @param {Object} oldTarget Human-corrected version of oldMachineTranslation
+ * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
+ * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
+ * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
  * @return {Array|undefined} Linear data of machineTranslation2 with adapted human corrections; undefined if not adaptable
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {

@@ -193,7 +193,7 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
  * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
  * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
- * @return {Array} Candidate linear data for human-corrected newMachineTranslation (with our without conflicts)
+ * @return {Array} Linear data for candidate human-corrected newMachineTranslation (with our without conflicts)
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
 	var i, iLen, item,

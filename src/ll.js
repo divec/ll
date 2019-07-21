@@ -127,7 +127,7 @@ ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modif
  * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
  * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
  * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
- * @return {Object[]} Diff to obtain corected new machine translation
+ * @return {Object[]} Diff to use as candidate for human-corrected new machine translation
  * @return {Object} return.i The i'th item of the diff
  * @return {string} return.i.type RETAIN or REPLACE
  * @return {Array} [return.i.data] For retain, linear data retained

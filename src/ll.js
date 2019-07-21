@@ -120,6 +120,104 @@ ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modif
 };
 
 /**
+ * Adapt corrections from old machine translation to new machine translation
+ *
+ * This has similarities of logic to ve.dm.Change.static.rebaseTransactions
+ *
+ * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
+ * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
+ * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
+ * @return {Object[]} Diff to obtain corected new machine translation
+ * @return {Object} return.i The i'th item of the diff
+ * @return {string} return.i.type RETAIN or REPLACE
+ * @return {Array} [return.i.data] For retain, linear data retained
+ * @return {boolean} [return.i.conflict] For replace, true if there is an adaptation conflict
+ * @return {Array} [return.i.remove] For replace, linear data removed
+ * @return {Array} [return.i.insert] For replace, linear data for insertion
+ */
+ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
+	var m1, m2, t1, m1m2, m1t1, startToken, endToken, m2t1, insertion, diff;
+
+	// TODO: don't lose annotations
+	m1 = ll.getTokens( oldMachineTranslation.allText );
+	m2 = ll.getTokens( newMachineTranslation.allText );
+	t1 = ll.getTokens( oldTarget.allText );
+
+	m1m2 = ve.countEdgeMatches( m1, m2 );
+	m1t1 = ve.countEdgeMatches( m1, t1 );
+
+	if ( !m1m2 ) {
+		// No changes to the MT: m1 and m2 are identical
+		m1m2 = { start: 0, end: m1.length };
+	}
+
+	if ( !m1t1 ) {
+		// No corrections to the MT: m1 and t1 are identical
+		m1t1 = { start: 0, end: t1.length };
+	}
+
+	// Calculate replacement range in t1
+	if ( m1.length - m1m2.end <= m1t1.start ) {
+		startToken = m1m2.start;
+		endToken = m1.length - m1m2.end;
+	} else if ( m1.length - m1t1.end <= m1m2.start ) {
+		startToken = m1m2.start + t1.length - m1.length;
+		endToken = t1.length - m1m2.end;
+	} else {
+		// Conflict between the MT update and the MT correction
+		m2t1 = ve.countEdgeMatches( m2, t1 );
+		diff = [];
+		if ( m2t1.start > 0 ) {
+			diff.push( {
+				type: 'RETAIN',
+				data: m2.slice( 0, m2t1.start ).join( '' ).split( '' )
+			} );
+		}
+		diff.push( {
+			type: 'REPLACE',
+			conflict: true,
+			remove: t1.slice( m2t1.start, t1.length - m2t1.end ).join( '' ).split( '' ),
+			insert: m2.slice( m2t1.start, m2.length - m2t1.end ).join( '' ).split( '' )
+		} );
+		if ( m2t1.end > 0 ) {
+			diff.push( {
+				type: 'RETAIN',
+				data: m2.slice( m2.length - m2t1.end ).join( '' ).split( '' )
+			} );
+		}
+		return diff;
+	}
+	// Else no conflict
+
+	diff = [];
+	if ( startToken > 0 ) {
+		diff.push( {
+			type: 'RETAIN',
+			data: t1.slice( 0, startToken ).join( '' ).split( '' )
+		} );
+	}
+
+	insertion = newMachineTranslation.slice(
+		m2.slice( 0, m1m2.start ).join( '' ).length,
+		m2.slice( 0, m2.length - m1m2.end ).join( '' ).length
+	);
+	diff.push( {
+		type: 'REPLACE',
+		conflict: false,
+		remove: m1.slice( m1m2.start, m1.length - m1m2.end ).join( '' ).split( '' ),
+		insert: insertion.toLinearData()
+	} );
+
+	if ( endToken < t1.length ) {
+		diff.push( {
+			type: 'RETAIN',
+			data: t1.slice( endToken ).join( '' ).split( '' )
+		} );
+	}
+	return diff;
+};
+
+/**
  * Make a postponed call.
  *
  * Use this instead of setTimeout, for easier replacement when testing.
@@ -139,9 +237,17 @@ ll.setTimeout = setTimeout.bind( null );
  */
 ll.clearTimeout = clearTimeout.bind( null );
 
+/**
+ * Return a copy of data with an annotation added in the topmost position
+ *
+ * @param {string} hash The annotation hash
+ * @param {Array} data The linear data
+ * @return {Array} Annotated copy of the linear data
+ */
 ll.annotateData = function ( hash, data ) {
 	return data.map( function ( item ) {
 		if ( item.type ) {
+			// Only annotate text
 			return item;
 		}
 		if ( Array.isArray( item ) ) {

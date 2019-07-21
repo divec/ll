@@ -190,80 +190,30 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 /**
  * Adapt corrections from old machine translation to new machine translation
  *
- * This is fundamentally the same logic as ve.dm.Change.static.rebaseTransactions
- *
  * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
  * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
  * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
- * @return {Array|undefined} Linear data of machineTranslation2 with adapted human corrections; undefined if not adaptable
+ * @return {Array} Candidate linear data for human-corrected newMachineTranslation (with our without conflicts)
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var m1, m2, t1, m1m2, m1t1, startToken, endToken, m2t1,
-		insertion, newData;
+	var i, iLen, item,
+		diff = ll.adaptCorrections( oldMachineTranslation, newMachineTranslation, oldTarget ),
+		data = [];
 
-	function annotateData( hash, data ) {
-		return data.map( function ( item ) {
-			if ( item.type ) {
-				return item;
+	for ( i = 0, iLen = diff.length; i < iLen; i++ ) {
+		item = diff[ i ];
+		if ( item.type === 'RETAIN' ) {
+			ve.batchPush( data, item.data );
+		} else if ( !item.conflict ) {
+			if ( iLen === 1 ) {
+				ve.batchPush( data, item.insert );
+			} else {
+				ve.batchPush( data, ll.annotateData( this.updateHash, item.insert ) );
 			}
-			if ( Array.isArray( item ) ) {
-				return [ item[ 0 ], [ hash ].concat( item[ 1 ] ) ];
-			}
-			return [ item, [ hash ] ];
-		} );
+		} else {
+			ve.batchPush( data, ll.annotateData( this.conflictHash, item.remove ) );
+			ve.batchPush( data, ll.annotateData( this.updateHash, item.insert ) );
+		}
 	}
-
-	m1 = ll.getTokens( oldMachineTranslation.allText );
-	m2 = ll.getTokens( newMachineTranslation.allText );
-	t1 = ll.getTokens( oldTarget.allText );
-
-	m1m2 = ve.countEdgeMatches( m1, m2 );
-	m1t1 = ve.countEdgeMatches( m1, t1 );
-
-	if ( !m1m2 ) {
-		// No changes: m1 and m2 are identical
-		m1m2 = { start: 0, end: m1.length };
-	}
-
-	if ( !m1t1 ) {
-		m1t1 = { start: 0, end: t1.length };
-	}
-
-	// Calculate replacement range in t1
-	if ( m1.length - m1m2.end <= m1t1.start ) {
-		startToken = m1m2.start;
-		endToken = m1.length - m1m2.end;
-
-	} else if ( m1.length - m1t1.end <= m1m2.start ) {
-		startToken = m1m2.start + t1.length - m1.length;
-		endToken = t1.length - m1m2.end;
-	} else {
-		// Conflict between the MT update and the MT correction
-		m2t1 = ve.countEdgeMatches( m2, t1 );
-		newData = [].concat(
-			m2.slice( 0, m2t1.start ).join( '' ).split( '' ),
-			annotateData(
-				this.conflictHash,
-				t1.slice( m2t1.start, t1.length - m2t1.end ).join( '' ).split( '' )
-			),
-			annotateData(
-				this.updateHash,
-				m2.slice( m2t1.start, m2.length - m2t1.end ).join( '' ).split( '' )
-			),
-			m2.slice( m2.length - m2t1.end ).join( '' ).split( '' )
-		);
-		return newData;
-	}
-	insertion = newMachineTranslation.slice(
-		m2.slice( 0, m1m2.start ).join( '' ).length,
-		m2.slice( 0, m2.length - m1m2.end ).join( '' ).length
-	);
-	newData = [].concat(
-		t1.slice( 0, startToken ).join( '' ).split( '' ),
-		( startToken === 0 && endToken === t1.length ) ?
-			insertion.toLinearData() :
-			annotateData( this.updateHash, insertion.toLinearData() ),
-		t1.slice( endToken ).join( '' ).split( '' )
-	);
-	return newData;
+	return data;
 };

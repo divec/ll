@@ -51,6 +51,20 @@ ll.GoogleTranslator.static.stack = [];
  */
 ll.GoogleTranslator.static.timer = null;
 
+/* Static methods */
+
+/**
+ * Unescape XML-like entities such as &#39; that can appear in Google translated text
+ *
+ * @param {string} text Raw text from Google translate
+ * @return {string} The text, with XML-like entities unescaped
+ */
+ll.GoogleTranslator.static.unescapeEntities = function ( text ) {
+	return text.replace( /&#(\d+);/g, function ( entity ) {
+		return String.fromCharCode( parseInt( entity.slice( 2, -1 ), 10 ) );
+	} );
+};
+
 /**
  * Process queued tasks.
  *
@@ -118,8 +132,9 @@ ll.GoogleTranslator.prototype.fetchLangPairsPromise = function () {
  * @inheritdoc
  */
 ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, targetLang, texts ) {
-	var translator = this;
-	return ll.GoogleTranslator.static.queue( function ( resolve, reject ) {
+	var translator = this,
+		unescapeEntities = this.constructor.static.unescapeEntities;
+	return this.constructor.static.queue( function ( resolve, reject ) {
 		$.ajax( {
 			url: translator.url + '/language/translate/v2',
 			method: 'post',
@@ -135,7 +150,7 @@ ll.GoogleTranslator.prototype.translatePlaintext = function ( sourceLang, target
 			reject( error );
 		} ).done( function ( data ) {
 			resolve( data.data.translations.map( function ( translation ) {
-				return translation.translatedText;
+				return unescapeEntities( translation.translatedText );
 			} ) );
 		} );
 	} );

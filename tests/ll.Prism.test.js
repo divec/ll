@@ -196,7 +196,8 @@ QUnit.test( 'adaptCorrections', function ( assert ) {
 		fakePrism = {
 			conflictHash: '-',
 			updateHash: '+',
-			adaptCorrections: ll.Prism.prototype.adaptCorrections
+			adaptCorrections: ll.Prism.prototype.adaptCorrections,
+			differ: new ll.Differ( new ve.dm.HashValueStore() )
 		};
 
 	function chunk( plaintext ) {

@@ -127,6 +127,8 @@ ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modif
  * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
  * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
  * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
+ * @param {ll.Differ} differ Differ object
+ * @param {ve.dm.HashValueStore} store The hash value store
  * @return {Object[]} Diff to use as candidate for human-corrected new machine translation
  * @return {Object} return.i The i'th item of the diff
  * @return {string} return.i.type RETAIN or REPLACE
@@ -135,86 +137,25 @@ ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modif
  * @return {Array} [return.i.remove] For replace, linear data removed
  * @return {Array} [return.i.insert] For replace, linear data for insertion
  */
-ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var m1, m2, t1, m1m2, m1t1, startToken, endToken, m2t1, insertion, diff;
-
-	// TODO: don't lose annotations
-	m1 = ll.getTokens( oldMachineTranslation.allText );
-	m2 = ll.getTokens( newMachineTranslation.allText );
-	t1 = ll.getTokens( oldTarget.allText );
-
-	m1m2 = ve.countEdgeMatches( m1, m2 );
-	m1t1 = ve.countEdgeMatches( m1, t1 );
-
-	if ( !m1m2 ) {
-		// No changes to the MT: m1 and m2 are identical
-		m1m2 = { start: 0, end: m1.length };
-	}
-
-	if ( !m1t1 ) {
-		// No corrections to the MT: m1 and t1 are identical
-		m1t1 = { start: 0, end: t1.length };
-	}
-
-	// Calculate replacement range in t1
-	if ( m1.length - m1m2.end <= m1t1.start ) {
-		startToken = m1m2.start;
-		endToken = m1.length - m1m2.end;
-	} else if ( m1.length - m1t1.end <= m1m2.start ) {
-		startToken = m1m2.start + t1.length - m1.length;
-		endToken = t1.length - m1m2.end;
-	} else {
-		// Conflict between the MT update and the MT correction
-		m2t1 = ve.countEdgeMatches( m2, t1 );
-		diff = [];
-		if ( m2t1.start > 0 ) {
-			diff.push( {
-				type: 'RETAIN',
-				data: m2.slice( 0, m2t1.start ).join( '' ).split( '' )
-			} );
-		}
-		diff.push( {
-			type: 'REPLACE',
-			conflict: true,
-			remove: t1.slice( m2t1.start, t1.length - m2t1.end ).join( '' ).split( '' ),
-			insert: m2.slice( m2t1.start, m2.length - m2t1.end ).join( '' ).split( '' )
-		} );
-		if ( m2t1.end > 0 ) {
-			diff.push( {
-				type: 'RETAIN',
-				data: m2.slice( m2.length - m2t1.end ).join( '' ).split( '' )
-			} );
-		}
-		return diff;
-	}
-	// Else no conflict
-
-	diff = [];
-	if ( startToken > 0 ) {
-		diff.push( {
-			type: 'RETAIN',
-			data: t1.slice( 0, startToken ).join( '' ).split( '' )
-		} );
-	}
-
-	insertion = newMachineTranslation.slice(
-		m2.slice( 0, m1m2.start ).join( '' ).length,
-		m2.slice( 0, m2.length - m1m2.end ).join( '' ).length
+ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget, differ ) {
+	var diff3 = differ.diff3(
+		newMachineTranslation.toLinearData(),
+		oldMachineTranslation.toLinearData(),
+		oldTarget.toLinearData()
 	);
-	diff.push( {
-		type: 'REPLACE',
-		conflict: false,
-		remove: m1.slice( m1m2.start, m1.length - m1m2.end ).join( '' ).split( '' ),
-		insert: insertion.toLinearData()
-	} );
 
-	if ( endToken < t1.length ) {
-		diff.push( {
-			type: 'RETAIN',
-			data: t1.slice( endToken ).join( '' ).split( '' )
-		} );
-	}
-	return diff;
+	return diff3.map( function ( triple ) {
+		var m2 = triple[ 0 ],
+			m1 = triple[ 1 ],
+			t1 = triple[ 2 ];
+		if ( m2 === null ) {
+			return { type: 'RETAIN', data: m1 };
+		} else if ( t1 === null ) {
+			return { type: 'REPLACE', conflict: false, remove: m1, insert: m2 };
+		} else {
+			return { type: 'REPLACE', conflict: true, remove: t1, insert: m2 };
+		}
+	} );
 };
 
 /**

@@ -34,7 +34,9 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 	// TODO use one target with two surfaces? But then they'd share one toolbar, do we want that?
 	this.firstSurface = makeSurface( firstOptions.lang, firstOptions.dir, firstOptions.html );
 	this.firstDoc = this.firstSurface.getDocument();
-	this.secondSurface = makeSurface( secondOptions.lang, secondOptions.dir, secondOptions.html, this.firstDoc.getStore() );
+	this.store = this.firstDoc.getStore();
+	this.secondSurface = makeSurface( secondOptions.lang, secondOptions.dir, secondOptions.html, this.store );
+	this.differ = new ll.Differ( this.store );
 	this.secondDoc = this.secondSurface.getDocument();
 	this.firstDoc.other = this.secondDoc;
 	this.secondDoc.other = this.firstDoc;
@@ -197,7 +199,12 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
 	var i, iLen, item,
-		diff = ll.adaptCorrections( oldMachineTranslation, newMachineTranslation, oldTarget ),
+		diff = ll.adaptCorrections(
+			oldMachineTranslation,
+			newMachineTranslation,
+			oldTarget,
+			this.differ
+		),
 		data = [];
 
 	for ( i = 0, iLen = diff.length; i < iLen; i++ ) {

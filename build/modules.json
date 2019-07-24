@@ -18,6 +18,7 @@
 			"src/ll.js",
 			"src/ll.init.LLTarget.js",
 			"src/ll.ChunkedText.js",
+			"src/ll.Differ.js",
 			"src/ll.Translator.js",
 			"src/ll.ApertiumTranslator.js",
 			"src/ll.YandexTranslator.js",

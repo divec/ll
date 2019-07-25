@@ -107,7 +107,7 @@ ll.ApertiumTranslator.static.bundle = function ( texts ) {
  * @return {strings[]} The unbundled texts
  */
 ll.ApertiumTranslator.static.unbundle = function ( bundled ) {
-	return bundled.split( /(?:\n|^):!!:(?:\n|$)/ );
+	return bundled.split( /(?:\s*\n|^):!!:(?:\n\s*|$)/ );
 };
 
 /* Instance methods */

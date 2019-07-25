@@ -207,15 +207,24 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  * @return {Array} Linear data for candidate human-corrected newMachineTranslation (with our without conflicts)
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var i, iLen, item,
-		diff = ll.adaptCorrections(
-			oldMachineTranslation,
-			newMachineTranslation,
-			oldTarget,
-			this.differ
-		),
+	var i, iLen, item, diff,
 		data = [];
 
+	function eqJSON( val1, val2 ) {
+		return JSON.stringify( val1 ) === JSON.stringify( val2 );
+	}
+
+	if ( eqJSON( oldMachineTranslation, newMachineTranslation ) ) {
+		// No change
+		return oldTarget.toLinearData();
+	}
+
+	diff = ll.adaptCorrections(
+		oldMachineTranslation,
+		newMachineTranslation,
+		oldTarget,
+		this.differ
+	);
 	for ( i = 0, iLen = diff.length; i < iLen; i++ ) {
 		item = diff[ i ];
 		if ( item.type === 'RETAIN' ) {

@@ -142,6 +142,7 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 			targetLang = otherDoc.getLang();
 
 		if (
+			!sourceNode.getDocument() ||
 			sourceNode.getAttribute( 'll-dirty' ) === 'mt' ||
 			sourceNode.getAttribute( 'll-dirty' ) === 'edited' ||
 			targetNode.getAttribute( 'll-dirty' ) === 'edited'

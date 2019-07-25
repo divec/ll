@@ -148,13 +148,16 @@ ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, o
 		var m2 = triple[ 0 ],
 			m1 = triple[ 1 ],
 			t1 = triple[ 2 ];
-		if ( m2 === null ) {
-			return { type: 'RETAIN', data: t1 || m1 };
-		} else if ( t1 === null ) {
-			return { type: 'REPLACE', conflict: false, remove: m1, insert: m2 };
-		} else {
-			return { type: 'REPLACE', conflict: true, remove: t1, insert: m2 };
+		if ( t1 === null && m2 === null ) {
+			return { type: 'RETAIN', data: m1 };
 		}
+		if ( m2 === null ) {
+			return { type: 'REPLACE', conflict: false, remove: m1, insert: t1 };
+		}
+		if ( t1 === null ) {
+			return { type: 'REPLACE', conflict: false, remove: m1, insert: m2 };
+		}
+		return { type: 'REPLACE', conflict: true, remove: t1, insert: m2 };
 	} );
 };
 

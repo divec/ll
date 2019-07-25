@@ -122,26 +122,26 @@ ll.demo.setup = function () {
 				{
 					lang: 'en',
 					dir: 'ltr',
-					// eslint-disable-next-line no-multi-str
-					html: '<h1>LL two-way parallel translation</h1>\
-					<figure class="ve-align-right"><img src="images/logo.svg" width="248" height="105"><figcaption>LL is parallel translation</figcaption></figure>\
-					<ul><li><b>Bidirectional</b> translation.</li>\
-					<li>The source and target language is determined per paragraph</li>\
-					<li>Highlighted paragraphs contain uncommitted translations.</li>\
-					<li>Click “✓” to commit the translation.</li></ul>\
-					'
+					html: [
+						'<h1>Bidirectional translation</h1>',
+						'<figure class="ve-align-right"><img src="images/logo.svg" width="248" height="105"><figcaption>Logo</figcaption></figure>',
+						'<ul><li>You can edit text on either side.</li>',
+						'<li>The edited text will be translated to the other side.</li>',
+						'<li>You can correct the translation.</li>',
+						'<li>Then click on “✓” to confirm the translation.</li></ul>'
+					].join( '\n' )
 				},
 				{
 					lang: 'es',
 					dir: 'ltr',
-					// eslint-disable-next-line no-multi-str
-					html: '<h1>LL traducción paralela bidireccional</h1>\
-					<figure class="ve-align-right"><img src="images/logo.svg" width="248" height="105"><figcaption>LL es traducción paralela</figcaption></figure>\
-					<ul><li>Traducción <b>bidireccional</b>.</li>\
-					<li>El idioma de origen y destino se determina por párrafo</li>\
-					<li>Los párrafos resaltados contienen traducciones no comprometidas.</li>\
-					<li>Haga clic en “✓” para confirmar la traducción.</li></ul>\
-					'
+					html: [
+						'<h1>Traduccion bidireccional</h1>',
+						'<figure class="ve-align-right"><img src="images/logo.svg" width="248" height="105"><figcaption>Logo</figcaption></figure>',
+						'<ul><li>Puedes editar texto en cualquier lado.</li>',
+						'<li>El texto editado será traducido al otro lado.</li>',
+						'<li>Puede corregir la traducción</li>',
+						'<li>Luego haga clic en “✓” para confirmar la traducción.</li>'
+					].join( '\n' )
 				},
 				ll.demo.translator
 			);

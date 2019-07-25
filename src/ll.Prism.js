@@ -154,6 +154,10 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 		chunkedSource = sourceNode.getChunked();
 		oldChunkedSource = sourceNode.getLastApproved();
 		oldChunkedTarget = targetNode.getLastApproved();
+		if ( !oldChunkedSource || !oldChunkedTarget ) {
+			oldChunkedSource = new ll.ChunkedText( '', [], [] );
+			oldChunkedTarget = new ll.ChunkedText( '', [], [] );
+		}
 		promise = prism.translator.translate(
 			sourceLang,
 			targetLang,

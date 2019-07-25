@@ -50,7 +50,7 @@ ve.dm.Surface.prototype.markApproved = function ( node ) {
 		}
 	}
 	if ( conflictSince !== null ) {
-		transactions.push( ve.dm.TransactionBuilder.newFromRemoval(
+		transactions.push( ve.dm.TransactionBuilder.static.newFromRemoval(
 			doc,
 			new ve.Range( start, conflictSince + 1 )
 		) );

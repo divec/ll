@@ -149,7 +149,7 @@ ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, o
 			m1 = triple[ 1 ],
 			t1 = triple[ 2 ];
 		if ( m2 === null ) {
-			return { type: 'RETAIN', data: m1 };
+			return { type: 'RETAIN', data: t1 || m1 };
 		} else if ( t1 === null ) {
 			return { type: 'REPLACE', conflict: false, remove: m1, insert: m2 };
 		} else {

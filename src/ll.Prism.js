@@ -166,7 +166,11 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 			var newTargetData, tx,
 				oldMachineTranslation = machineTranslations[ 0 ],
 				newMachineTranslation = machineTranslations[ 1 ];
-			if ( JSON.stringify( chunkedSource ) !== JSON.stringify( sourceNode.getChunked() ) ) {
+			if (
+				!sourceNode.getDocument() ||
+				JSON.stringify( chunkedSource ) !== JSON.stringify( sourceNode.getChunked() )
+			) {
+
 				// Source has changed since we started translating; abort
 				return;
 			}

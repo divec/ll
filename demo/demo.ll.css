@@ -26,11 +26,11 @@
 	background-color: #fae168;
 }
 
-.ve-ce-contentBranchNode-ll-dirty .ll-conflict {
+.ll-conflict {
 	text-decoration: line-through;
 	background-color: #fbb;
 }
 
-.ve-ce-contentBranchNode-ll-dirty .ll-update {
+.ll-update {
 	text-decoration: underline;
 }

@@ -23,12 +23,6 @@ ve.dm.Surface.prototype.markApproved = function ( node ) {
 		conflictHash = doc.getStore().hash( conflictAnnotation ),
 		conflictSince = null;
 
-	// Unset dirty flag on CBN
-	transactions.push( ve.dm.TransactionBuilder.static.newFromAttributeChanges(
-		doc,
-		node.getOuterRange().start,
-		{ 'll-dirty': 'approved' }
-	) );
 	// Remove ll/update annotation
 	transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
 		doc,
@@ -55,6 +49,12 @@ ve.dm.Surface.prototype.markApproved = function ( node ) {
 			new ve.Range( start, conflictSince + 1 )
 		) );
 	}
+	// Unset dirty flag on CBN
+	transactions.push( ve.dm.TransactionBuilder.static.newFromAttributeChanges(
+		doc,
+		node.getOuterRange().start,
+		{ 'll-dirty': 'approved' }
+	) );
 	// TODO: This should be atomic (or better still, squashed into a single commit)
 	this.change( transactions );
 	doc.storeApprovedPair( node );

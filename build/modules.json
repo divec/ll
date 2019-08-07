@@ -39,6 +39,7 @@
 			"tests/ll.test.js",
 			"tests/ll.ApertiumTranslator.test.js",
 			"tests/ll.ChunkedText.test.js",
+			"tests/ll.Differ.test.js",
 			"tests/ll.Prism.test.js",
 			"tests/ve.ui.LLClearDirtyCommand.test.js"
 		],

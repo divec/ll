@@ -65,11 +65,23 @@ module.exports = function ( grunt ) {
 		},
 		buildloader: {
 			desktopDemoApex: {
-				targetFile: 'demo/LL.html',
+				targetFile: 'demo/LL-apex.html',
 				template: 'demo/LL.html.template',
 				modules: modules,
-				load: [ 'll.build' ],
-				run: [ 'll.build' ],
+				load: [ 'll.build.apex' ],
+				run: [ 'll.build.apex' ],
+				env: { debug: false },
+				dir: 'ltr',
+				pathPrefix: '../',
+				i18n: [ 'i18n/', 'lib/ve/i18n/', 'lib/ve/lib/oojs-ui/i18n/' ],
+				indent: '\t\t'
+			},
+			desktopDemoWmui: {
+				targetFile: 'demo/LL-wmui.html',
+				template: 'demo/LL.html.template',
+				modules: modules,
+				load: [ 'll.build.wikimediaui' ],
+				run: [ 'll.build.wikimediaui' ],
 				env: { debug: false },
 				dir: 'ltr',
 				pathPrefix: '../',

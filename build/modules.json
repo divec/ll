@@ -28,9 +28,20 @@
 	},
 	"ll.build": {
 		"dependencies": [
-			"visualEditor.desktop.standalone.apex.dist",
 			"visualEditor.standalone.read",
 			"ll"
+		]
+	},
+	"ll.build.apex": {
+		"dependencies": [
+			"visualEditor.desktop.standalone.apex.dist",
+			"ll.build"
+		]
+	},
+	"ll.build.wikimediaui": {
+		"dependencies": [
+			"visualEditor.desktop.standalone.wikimediaui.dist",
+			"ll.build"
 		]
 	},
 	"ll.test": {

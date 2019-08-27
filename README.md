@@ -16,8 +16,8 @@
 - `grunt build`
 - `cp environment.json.apertium-example environment.json`
  (or alternatively, use `environment.json.yandex-example` and put in your Yandex API key)
-- Run a local static webserver in the repository directory: `python3 -m http.server`
-- Browse to `http://localhost:8000/demo/LL.html`
+- Run any local webserver in the repository directory, e.g. `python3 -m http.server`
+- Browse to one of the html pages in `/demo`, e.g. `http://localhost:8000/demo/LL-apex.html` or `http://localhost:8000/demo/LL-wmui.html`
 
 ## License
 

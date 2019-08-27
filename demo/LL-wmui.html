@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<!--
+	/*!
+	 * LL two-way parallel translation
+	 *
+	 * @copyright 2019 LL team and others; see LICENSE.txt for terms
+	 */
+	-->
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta name="google" content="notranslate" />
+		<link rel="icon" type="image/ico" href="images/favicon.ico" />
+		<link rel="icon" type="image/png" href="images/favicon-16.png" sizes="16x16" />
+		<link rel="icon" type="image/png" href="images/favicon-32.png" sizes="32x32" />
+
+		<title>LL two-way parallel translation</title>
+
+		<!-- oojs-ui-wikimediaui -->
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-alerts.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-content.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-interactions.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-layout.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-moderation.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-movement.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-user.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-editing-core.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-editing-advanced.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-editing-styling.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui-icons-editing-list.css" class="stylesheet-read">
+
+		<!-- visualEditor.dist.wikimediaui -->
+		<link rel=stylesheet href="../lib/ve/dist/visualEditor-wikimediaui.css" class="stylesheet-ve">
+
+		<!-- visualEditor.standalone.read -->
+		<link rel=stylesheet href="../lib/ve/src/init/sa/styles/ve.init.sa.css" class="stylesheet-read">
+		<link rel=stylesheet href="../lib/ve/demos/ve/demo.minimal.css">
+		<link rel=stylesheet href="demo.ll.css">
+	</head>
+	<body dir="ltr">
+		<h1 style="text-align: center">Experimental demo</h1>
+		<div class="ll-demo-editors">
+			<div class="ll-demo-editor">
+				<div class="ve-instance"></div>
+			</div>
+			<div class="ll-demo-editor">
+				<div class="ve-instance"></div>
+			</div>
+		</div>
+
+		<!-- jquery -->
+		<script src="../lib/ve/lib/jquery/jquery.js"></script>
+
+		<!-- oojs -->
+		<script src="../lib/ve/lib/oojs/oojs.jquery.js"></script>
+
+		<!-- oojs-ui -->
+		<script src="../lib/ve/lib/oojs-ui/oojs-ui-core.js"></script>
+		<script src="../lib/ve/lib/oojs-ui/oojs-ui-widgets.js"></script>
+		<script src="../lib/ve/lib/oojs-ui/oojs-ui-toolbars.js"></script>
+		<script src="../lib/ve/lib/oojs-ui/oojs-ui-windows.js"></script>
+
+		<!-- jquery.i18n.dist -->
+		<script src="../lib/ve/dist/lib/jquery.i18n.js"></script>
+
+		<!-- jquery.uls.data.dist -->
+		<script src="../lib/ve/dist/lib/jquery.uls.data.js"></script>
+
+		<!-- jquery.client -->
+		<script src="../lib/ve/lib/jquery.client/jquery.client.js"></script>
+
+		<!-- papaparse -->
+		<script src="../lib/ve/lib/papaparse/papaparse.js"></script>
+
+		<!-- oojs-ui-wikimediaui -->
+		<script src="../lib/ve/lib/oojs-ui/oojs-ui-wikimediaui.js"></script>
+
+		<!-- visualEditor.dist -->
+		<script src="../lib/ve/dist/visualEditor.js"></script>
+
+		<!-- visualEditor.desktop.standalone.wikimediaui.dist -->
+		<script src="../lib/ve/src/init/sa/ve.init.sa.DesktopTarget.js"></script>
+
+		<!-- ll -->
+		<script src="../src/ve.ce.LinearEnterKeyDownHandler.ext.js"></script>
+		<script src="../src/ve.dm.ext.js"></script>
+		<script src="../src/ve.dm.LinearData.ext.js"></script>
+		<script src="../src/ve.dm.ContentBranchNode.ext.js"></script>
+		<script src="../src/ve.dm.Document.ext.js"></script>
+		<script src="../src/ve.dm.Surface.ext.js"></script>
+		<script src="../src/ve.dm.Transaction.ext.js"></script>
+		<script src="../src/ve.dm.LLConflictAnnotation.js"></script>
+		<script src="../src/ve.dm.LLUpdateAnnotation.js"></script>
+		<script src="../src/ve.ce.LLConflictAnnotation.js"></script>
+		<script src="../src/ve.ce.LLUpdateAnnotation.js"></script>
+		<script src="../src/ve.ui.LLAction.js"></script>
+		<script src="../src/ve.ui.LLClearDirtyCommand.js"></script>
+		<script src="../src/ve.ui.LLClearDirtyTool.js"></script>
+		<script src="../src/ll.js"></script>
+		<script src="../src/ll.init.LLTarget.js"></script>
+		<script src="../src/ll.ChunkedText.js"></script>
+		<script src="../src/ll.Differ.js"></script>
+		<script src="../src/ll.Translator.js"></script>
+		<script src="../src/ll.ApertiumTranslator.js"></script>
+		<script src="../src/ll.YandexTranslator.js"></script>
+		<script src="../src/ll.GoogleTranslator.js"></script>
+		<script src="../src/ll.Prism.js"></script>
+
+		<script>
+			ve.messagePaths = [
+				'../i18n/',
+				'../lib/ve/i18n/',
+				'../lib/ve/lib/oojs-ui/i18n/'
+			];
+			ve.availableLanguages = [ 'en', 'qqq', 'ace', 'af', 'ais', 'am', 'ang', 'ar', 'arc', 'arq', 'as', 'ast', 'av', 'az', 'azb', 'ba', 'bcc', 'bcl', 'be-tarask', 'be', 'bg', 'bho', 'bjn', 'bn', 'bqi', 'br', 'bs', 'ca', 'cdo', 'ce', 'cjy-hant', 'ckb', 'co', 'cs', 'cu', 'cy', 'da', 'de', 'diq', 'dsb', 'dty', 'egl', 'el', 'eml', 'en-ca', 'en-gb', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fo', 'fr', 'frp', 'frr', 'fur', 'fy', 'ga', 'gd', 'gl', 'glk', 'gn', 'gom-latn', 'gor', 'gsw', 'gu', 'gv', 'he', 'hi', 'hr', 'hrx', 'hsb', 'hu-formal', 'hu', 'hy', 'hyw', 'ia', 'id', 'ie', 'ilo', 'inh', 'io', 'is', 'it', 'ja', 'jv', 'ka', 'kab', 'khw', 'kk-cyrl', 'km', 'kn', 'ko-kp', 'ko', 'krc', 'kri', 'krl', 'ksh', 'ku-latn', 'kw', 'ky', 'la', 'lb', 'lez', 'lfn', 'li', 'lki', 'lmo', 'lrc', 'lt', 'luz', 'lv', 'lzh', 'lzz', 'mai', 'mg', 'min', 'mk', 'ml', 'mn', 'mni', 'mr', 'ms', 'mt', 'my', 'myv', 'nan', 'nap', 'nb', 'nds-nl', 'nds', 'ne', 'nl', 'nn', 'oc', 'olo', 'om', 'or', 'os', 'pa', 'pam', 'pfl', 'pl', 'pms', 'ps', 'pt-br', 'pt', 'qqq', 'qu', 'rm', 'ro', 'roa-tara', 'ru', 'rue', 'sa', 'sah', 'sc', 'scn', 'sco', 'sd', 'sgs', 'sh', 'shn', 'si', 'sk', 'skr-arab', 'sl', 'sq', 'sr-ec', 'sr-el', 'su', 'sv', 'sw', 'ta', 'tay', 'te', 'tg-cyrl', 'th', 'tl', 'tr', 'tt-cyrl', 'tw', 'tyv', 'tzm', 'ug-arab', 'uk', 'ur', 'uz', 'vec', 'vep', 'vi', 'vo', 'war', 'wuu', 'xmf', 'yi', 'yue', 'zh-hans', 'zh-hant', 'ace', 'af', 'ais', 'am', 'ar', 'arc', 'arq', 'as', 'ast', 'awa', 'az', 'azb', 'ba', 'bcc', 'bcl', 'be-tarask', 'be', 'bg', 'bho', 'bjn', 'bn', 'bqi', 'br', 'bs', 'ca', 'cdo', 'ce', 'ckb', 'co', 'crh-cyrl', 'crh-latn', 'cs', 'cu', 'cy', 'da', 'de', 'diq', 'dsb', 'dty', 'egl', 'el', 'eml', 'en-ca', 'en-gb', 'en', 'eo', 'es', 'et', 'eu', 'fa', 'fi', 'fo', 'fr', 'frr', 'fur', 'fy', 'gd', 'gl', 'glk', 'gom-latn', 'gor', 'gu', 'he', 'hi', 'hif-latn', 'hr', 'hrx', 'hsb', 'hu-formal', 'hu', 'hy', 'hyw', 'ia', 'id', 'ie', 'ilo', 'inh', 'io', 'is', 'it', 'ja', 'jv', 'ka', 'kab', 'khw', 'kk-cyrl', 'km', 'kn', 'ko', 'krc', 'krl', 'ksh', 'ku-latn', 'kw', 'ky', 'la', 'lb', 'li', 'lki', 'lmo', 'lt', 'luz', 'lv', 'lzh', 'mai', 'mg', 'min', 'mk', 'ml', 'mn', 'mni', 'mr', 'ms', 'my', 'myv', 'nan', 'nap', 'nb', 'nds-nl', 'nds', 'ne', 'nl', 'nn', 'oc', 'olo', 'om', 'or', 'pa', 'pfl', 'pl', 'pms', 'pnb', 'ps', 'pt-br', 'pt', 'qqq', 'qu', 'ro', 'roa-tara', 'ru', 'sa', 'sah', 'sc', 'scn', 'sco', 'sd', 'sh', 'shn', 'si', 'sk', 'skr-arab', 'sl', 'sq', 'sr-ec', 'sr-el', 'su', 'sv', 'sw', 'ta', 'tay', 'te', 'tg-cyrl', 'th', 'tl', 'tr', 'tt-cyrl', 'tw', 'ug-arab', 'uk', 'ur', 'uz', 'vec', 'vep', 'vi', 'vo', 'war', 'wuu', 'xmf', 'yi', 'yo', 'yue', 'zh-hans', 'zh-hant' ];
+		</script>
+		<script src="demo.ll.js"></script>
+	</body>
+</html>

@@ -207,7 +207,7 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  * @return {Array} Linear data for candidate human-corrected newMachineTranslation (with our without conflicts)
  */
 ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var i, iLen, item, diff,
+	var i, iLen, chunk, diff3,
 		data = [];
 
 	function eqJSON( val1, val2 ) {
@@ -219,25 +219,32 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 		return oldTarget.toLinearData();
 	}
 
-	diff = ll.adaptCorrections(
-		oldMachineTranslation,
-		newMachineTranslation,
-		oldTarget,
-		this.differ
+	diff3 = this.differ.diff3(
+		newMachineTranslation.toLinearData(),
+		oldMachineTranslation.toLinearData(),
+		oldTarget.toLinearData()
 	);
-	for ( i = 0, iLen = diff.length; i < iLen; i++ ) {
-		item = diff[ i ];
-		if ( item.type === 'RETAIN' ) {
-			ve.batchPush( data, item.data );
-		} else if ( !item.conflict ) {
-			if ( iLen === 1 ) {
-				ve.batchPush( data, item.insert );
+	for ( i = 0, iLen = diff3.length; i < iLen; i++ ) {
+		chunk = diff3[ i ];
+		if ( chunk[ 0 ] === null && chunk[ 2 ] === null ) {
+			// Neither side changed
+			ve.batchPush( data, chunk[ 1 ] );
+		} else if ( chunk[ 0 ] === null ) {
+			// Human correction only
+			ve.batchPush( data, chunk[ 2 ] );
+		} else if ( chunk[ 2 ] === null ) {
+			// Translation update only
+			if ( iLen > 1 ) {
+				// Annotate as an update
+				ve.batchPush( data, ll.annotateData( this.updateHash, chunk[ 0 ] ) );
 			} else {
-				ve.batchPush( data, ll.annotateData( this.updateHash, item.insert ) );
+				// ... but don't annotate if it's the only chunk
+				ve.batchPush( data, chunk[ 0 ] );
 			}
 		} else {
-			ve.batchPush( data, ll.annotateData( this.conflictHash, item.remove ) );
-			ve.batchPush( data, ll.annotateData( this.updateHash, item.insert ) );
+			// Translation update conflicts with human correction.
+			// Use the translation update, but mark it as conflicted
+			ve.batchPush( data, ll.annotateData( this.conflictHash, chunk[ 0 ] ) );
 		}
 	}
 	return data;

@@ -23,14 +23,15 @@
 
 /* XXX should this be in ve.ce.ContentBranchNode.css? */
 .ve-ce-contentBranchNode-ll-dirty {
-	background-color: #fae168;
+	border: solid transparent 0;
+	border-radius: 5px;
+	box-shadow: 0 0 5px #fa0;
 }
 
 .ll-conflict {
-	text-decoration: line-through;
 	background-color: #fbb;
 }
 
 .ll-update {
-	text-decoration: underline;
+	background-color: #fec;
 }

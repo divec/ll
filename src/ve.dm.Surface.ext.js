@@ -14,14 +14,10 @@
  * @param {ve.dm.ContentBranchNode} node The node
  */
 ve.dm.Surface.prototype.markApproved = function ( node ) {
-	var i, start, hasConflict,
-		transactions = [],
+	var transactions = [],
 		doc = this.getDocument(),
-		data = doc.data,
 		updateAnnotation = ve.dm.annotationFactory.create( 'll/update' ),
-		conflictAnnotation = ve.dm.annotationFactory.create( 'll/conflict' ),
-		conflictHash = doc.getStore().hash( conflictAnnotation ),
-		conflictSince = null;
+		conflictAnnotation = ve.dm.annotationFactory.create( 'll/conflict' );
 
 	// Remove ll/update annotation
 	transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
@@ -30,25 +26,13 @@ ve.dm.Surface.prototype.markApproved = function ( node ) {
 		'clear',
 		updateAnnotation
 	) );
-	// Remove content with ll/conflict annotation
-	for ( i = node.getRange().end - 1, start = node.getRange().start; i >= start; i-- ) {
-		hasConflict = data.getAnnotationHashesFromOffset( i ).indexOf( conflictHash ) !== -1;
-		if ( conflictSince === null && hasConflict ) {
-			conflictSince = i;
-		} else if ( conflictSince !== null && !hasConflict ) {
-			transactions.push( ve.dm.TransactionBuilder.static.newFromRemoval(
-				doc,
-				new ve.Range( i + 1, conflictSince + 1 )
-			) );
-			conflictSince = null;
-		}
-	}
-	if ( conflictSince !== null ) {
-		transactions.push( ve.dm.TransactionBuilder.static.newFromRemoval(
-			doc,
-			new ve.Range( start, conflictSince + 1 )
-		) );
-	}
+	// Remove ll/conflict annotation
+	transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
+		doc,
+		node.getRange(),
+		'clear',
+		conflictAnnotation
+	) );
 	// Unset dirty flag on CBN
 	transactions.push( ve.dm.TransactionBuilder.static.newFromAttributeChanges(
 		doc,

@@ -120,48 +120,6 @@ ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modif
 };
 
 /**
- * Adapt corrections from old machine translation to new machine translation
- *
- * This has similarities of logic to ve.dm.Change.static.rebaseTransactions
- *
- * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
- * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
- * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
- * @param {ll.Differ} differ Differ object
- * @param {ve.dm.HashValueStore} store The hash value store
- * @return {Object[]} Diff to use as candidate for human-corrected new machine translation
- * @return {Object} return.i The i'th item of the diff
- * @return {string} return.i.type RETAIN or REPLACE
- * @return {Array} [return.i.data] For retain, linear data retained
- * @return {boolean} [return.i.conflict] For replace, true if there is an adaptation conflict
- * @return {Array} [return.i.remove] For replace, linear data removed
- * @return {Array} [return.i.insert] For replace, linear data for insertion
- */
-ll.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget, differ ) {
-	var diff3 = differ.diff3(
-		newMachineTranslation.toLinearData(),
-		oldMachineTranslation.toLinearData(),
-		oldTarget.toLinearData()
-	);
-
-	return diff3.map( function ( triple ) {
-		var m2 = triple[ 0 ],
-			m1 = triple[ 1 ],
-			t1 = triple[ 2 ];
-		if ( t1 === null && m2 === null ) {
-			return { type: 'RETAIN', data: m1 };
-		}
-		if ( m2 === null ) {
-			return { type: 'REPLACE', conflict: false, remove: m1, insert: t1 };
-		}
-		if ( t1 === null ) {
-			return { type: 'REPLACE', conflict: false, remove: m1, insert: m2 };
-		}
-		return { type: 'REPLACE', conflict: true, remove: t1, insert: m2 };
-	} );
-};
-
-/**
  * Make a postponed call.
  *
  * Use this instead of setTimeout, for easier replacement when testing.

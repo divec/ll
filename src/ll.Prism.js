@@ -42,8 +42,6 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 	this.secondDoc.other = this.firstDoc;
 	this.translator = translator || null;
 
-	this.conflictAnnotation = ve.dm.annotationFactory.create( 'll/conflict' );
-	this.conflictHash = this.firstDoc.getStore().hash( this.conflictAnnotation );
 	this.updateAnnotation = ve.dm.annotationFactory.create( 'll/update' );
 	this.updateHash = this.firstDoc.getStore().hash( this.updateAnnotation );
 
@@ -163,7 +161,7 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 			targetLang,
 			[ oldChunkedSource, chunkedSource ]
 		).then( function ( machineTranslations ) {
-			var newTargetData, tx,
+			var diff3, newTargetData, tx,
 				oldMachineTranslation = machineTranslations[ 0 ],
 				newMachineTranslation = machineTranslations[ 1 ];
 			if (
@@ -176,11 +174,12 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 			}
 			prism.changedNodePairs.delete( sourceNode );
 
-			newTargetData = prism.adaptCorrections(
-				oldMachineTranslation,
-				newMachineTranslation,
-				oldChunkedTarget
+			diff3 = prism.differ.diff3(
+				newMachineTranslation.toLinearData(),
+				oldMachineTranslation.toLinearData(),
+				oldChunkedTarget.toLinearData()
 			);
+			newTargetData = prism.adaptCorrections( diff3 );
 			if ( newTargetData ) {
 				tx = ve.dm.TransactionBuilder.static.newFromReplacement(
 					otherDoc,
@@ -192,6 +191,13 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 				tx.noEcho = true;
 				otherDoc.commit( tx );
 			}
+			tx = ve.dm.TransactionBuilder.static.newFromAttributeChanges(
+				otherDoc,
+				targetNode.getOuterRange().start,
+				{ 'll-diff3': diff3 }
+			);
+			tx.noEcho = true;
+			otherDoc.commit( tx );
 		} );
 		promises.push( promise );
 	} );
@@ -201,29 +207,13 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 /**
  * Adapt corrections from old machine translation to new machine translation
  *
- * @param {ll.ChunkedText} oldMachineTranslation Machine-translated chunked old source
- * @param {ll.ChunkedText} newMachineTranslation Machine-translated chunked current source
- * @param {ll.ChunkedText} oldTarget Human-corrected version of oldMachineTranslation
+ * @param {Object[]} diff3 Three-way diff of (new machine translation, old machine translation, old corrections)
  * @return {Array} Linear data for candidate human-corrected newMachineTranslation (with our without conflicts)
  */
-ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachineTranslation, oldTarget ) {
-	var i, iLen, chunk, diff3,
+ll.Prism.prototype.adaptCorrections = function ( diff3 ) {
+	var i, iLen, chunk, conflictAnnotation,
 		data = [];
 
-	function eqJSON( val1, val2 ) {
-		return JSON.stringify( val1 ) === JSON.stringify( val2 );
-	}
-
-	if ( eqJSON( oldMachineTranslation, newMachineTranslation ) ) {
-		// No change
-		return oldTarget.toLinearData();
-	}
-
-	diff3 = this.differ.diff3(
-		newMachineTranslation.toLinearData(),
-		oldMachineTranslation.toLinearData(),
-		oldTarget.toLinearData()
-	);
 	for ( i = 0, iLen = diff3.length; i < iLen; i++ ) {
 		chunk = diff3[ i ];
 		if ( chunk[ 0 ] === null && chunk[ 2 ] === null ) {
@@ -244,7 +234,17 @@ ll.Prism.prototype.adaptCorrections = function ( oldMachineTranslation, newMachi
 		} else {
 			// Translation update conflicts with human correction.
 			// Use the translation update, but mark it as conflicted
-			ve.batchPush( data, ll.annotateData( this.conflictHash, chunk[ 0 ] ) );
+			conflictAnnotation = ve.dm.annotationFactory.createFromElement( {
+				type: 'll/conflict',
+				attributes: { origStart: data.length }
+			} );
+			ve.batchPush(
+				data,
+				ll.annotateData(
+					this.store.hash( conflictAnnotation ),
+					chunk[ 0 ]
+				)
+			);
 		}
 	}
 	return data;

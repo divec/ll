@@ -14,30 +14,31 @@
  * @param {ve.dm.ContentBranchNode} node The node
  */
 ve.dm.Surface.prototype.markApproved = function ( node ) {
-	var transactions = [],
+	var annotations,
 		doc = this.getDocument(),
-		updateAnnotation = ve.dm.annotationFactory.create( 'll/update' ),
-		conflictAnnotation = ve.dm.annotationFactory.create( 'll/conflict' );
+		transactions = [];
 
-	// Remove ll/update annotation
-	transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
-		doc,
-		node.getRange(),
-		'clear',
-		updateAnnotation
-	) );
-	// Remove ll/conflict annotation
-	transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
-		doc,
-		node.getRange(),
-		'clear',
-		conflictAnnotation
-	) );
-	// Unset dirty flag on CBN
+	// Remove ll/update and ll/conflict annotations
+	annotations = doc.data.getAnnotationsFromRange( node.getRange(), true );
+	// The method name 'values' confuses eslint, which thinks it's Array.prototype.values
+	// eslint-disable-next-line no-restricted-syntax
+	annotations.store.values( annotations.storeHashes ).forEach( function ( annotation ) {
+		if ( annotation.name !== 'll/update' && annotation.name !== 'll/conflict' ) {
+			return;
+		}
+		transactions.push( ve.dm.TransactionBuilder.static.newFromAnnotation(
+			doc,
+			node.getRange(),
+			'clear',
+			annotation
+		) );
+	} );
+
+	// Unset dirty flag and diff3 on CBN
 	transactions.push( ve.dm.TransactionBuilder.static.newFromAttributeChanges(
 		doc,
 		node.getOuterRange().start,
-		{ 'll-dirty': 'approved' }
+		{ 'll-dirty': 'approved', 'll-diff3': undefined }
 	) );
 	// TODO: This should be atomic (or better still, squashed into a single commit)
 	this.change( transactions );

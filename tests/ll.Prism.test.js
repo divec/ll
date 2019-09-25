@@ -193,9 +193,10 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 
 QUnit.test( 'adaptCorrections', function ( assert ) {
 	var tests, i, iLen, test, data,
+		store = new ve.dm.HashValueStore(),
 		fakePrism = {
-			updateHash: '@',
-			conflictHash: '!',
+			store: store,
+			updateHash: store.hash( ve.dm.annotationFactory.create( 'll/update' ) ),
 			adaptCorrections: ll.Prism.prototype.adaptCorrections,
 			differ: new ll.Differ( new ve.dm.HashValueStore() )
 		};
@@ -217,20 +218,20 @@ QUnit.test( 'adaptCorrections', function ( assert ) {
 			newMt: 'No tengo ninguna camisa, Peter',
 			newTarget: [].concat(
 				ann( null, 'No havo ' ),
-				ann( '@', 'ninguna camisa' ),
+				ann( 'h41c896f073fda2a6', 'ninguna camisa' ),
 				ann( null, ', ' ),
-				ann( '!', 'Peter' )
+				ann( 'ha82fb0cce3bc3c12', 'Peter' )
 			),
 			msg: 'Partially conflicting translation'
 		}
 	];
 	for ( i = 0, iLen = tests.length; i < iLen; i++ ) {
 		test = tests[ i ];
-		data = fakePrism.adaptCorrections(
-			chunk( test.oldMt ),
-			chunk( test.newMt ),
-			chunk( test.oldTarget )
-		);
+		data = fakePrism.adaptCorrections( fakePrism.differ.diff3(
+			chunk( test.newMt ).toLinearData(),
+			chunk( test.oldMt ).toLinearData(),
+			chunk( test.oldTarget ).toLinearData()
+		) );
 		assert.deepEqual( data, test.newTarget, test.msg );
 	}
 } );

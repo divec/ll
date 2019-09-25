@@ -33,14 +33,23 @@ ve.dm.LLConflictAnnotation.static.matchFunction = function ( domElement ) {
 
 ve.dm.LLConflictAnnotation.static.applyToAppendedContent = false;
 
-ve.dm.LLConflictAnnotation.static.toDataElement = function () {
+ve.dm.LLConflictAnnotation.static.toDataElement = function ( domElements ) {
 	// XXX include extra info to display
-	return { type: this.name };
+	return {
+		type: this.name,
+		attributes: {
+			origStart: parseInt(
+				domElements[ 0 ].getAttribute( 'data-origStart' ),
+				10
+			) || 0
+		}
+	};
 };
 
 ve.dm.LLConflictAnnotation.static.toDomElements = function ( dataElement, doc ) {
 	var domElement = doc.createElement( 'span' );
 	domElement.classList.add( 'll-conflict' );
+	domElement.setAttribute( 'data-origStart', dataElement.attributes.origStart );
 	return [ domElement ];
 };
 
@@ -50,7 +59,7 @@ ve.dm.LLConflictAnnotation.static.toDomElements = function ( dataElement, doc ) 
  * @return {Object}
  */
 ve.dm.LLConflictAnnotation.prototype.getComparableObject = function () {
-	return { type: 'll/conflict' };
+	return { type: 'll/conflict', origStart: this.getAttribute( 'origStart' ) };
 };
 
 /* Registration */

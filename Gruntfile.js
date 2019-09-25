@@ -194,6 +194,8 @@ module.exports = function ( grunt ) {
 							statements: 20,
 							lines: 20,
 							excludes: [
+								'src/ve.dm.LLConflictAnnotation.js',
+								'src/ve.dm.Surface.ext.js',
 								'src/ve.ce.LLConflictAnnotation.js',
 								'src/ve.ce.LLUpdateAnnotation.js',
 								'src/ve.ce.LinearEnterKeyDownHandler.ext.js',

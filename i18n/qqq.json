@@ -4,5 +4,9 @@
 			"David Chan"
 		]
 	},
-	"ll-demo-title": "Title for the LL demo"
+	"ll-demo-title": "Title for the LL demo",
+	"ll-conflictcontextitem-title": "Title for the conflict context item",
+	"ll-conflictcontextitem-oldmt": "Label for old machine translation",
+	"ll-conflictcontextitem-correction": "Label for old human-corrected translation",
+	"ll-conflictcontextitem-newmt": "Label for new machine translation"
 }

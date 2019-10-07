@@ -236,7 +236,7 @@ ll.Prism.prototype.adaptCorrections = function ( diff3 ) {
 			// Use the translation update, but mark it as conflicted
 			conflictAnnotation = ve.dm.annotationFactory.createFromElement( {
 				type: 'll/conflict',
-				attributes: { origStart: data.length }
+				attributes: { chunk: i }
 			} );
 			ve.batchPush(
 				data,

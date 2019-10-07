@@ -15,6 +15,7 @@
 			"src/ve.ui.LLAction.js",
 			"src/ve.ui.LLClearDirtyCommand.js",
 			"src/ve.ui.LLClearDirtyTool.js",
+			"src/ve.ui.LLConflictContextItem.js",
 			"src/ll.js",
 			"src/ll.init.LLTarget.js",
 			"src/ll.ChunkedText.js",

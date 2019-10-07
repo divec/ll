@@ -4,5 +4,9 @@
 			"David Chan"
 		]
 	},
-	"ll-demo-title": "LL two-way parallel translation"
+	"ll-demo-title": "LL two-way parallel translation",
+	"ll-conflictcontextitem-title": "Conflict",
+	"ll-conflictcontextitem-oldmt": "Old text",
+	"ll-conflictcontextitem-correction": "Your correction",
+	"ll-conflictcontextitem-newmt": "New text"
 }

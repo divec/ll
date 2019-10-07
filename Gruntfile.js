@@ -199,6 +199,7 @@ module.exports = function ( grunt ) {
 								'src/ve.ce.LLConflictAnnotation.js',
 								'src/ve.ce.LLUpdateAnnotation.js',
 								'src/ve.ce.LinearEnterKeyDownHandler.ext.js',
+								'src/ve.ui.LLConflictContextItem.js',
 								'src/ll.YandexTranslator.js',
 								'src/ll.GoogleTranslator.js'
 							]

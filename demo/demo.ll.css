@@ -28,10 +28,24 @@
 	box-shadow: 0 0 5px #fa0;
 }
 
+/* Styles on editable translation text */
 .ll-conflict {
 	background-color: #fbb;
 }
 
 .ll-update {
 	background-color: #fec;
+}
+
+/* Styles on text in ConflictContextItem box */
+.ll-active {
+	outline: solid rgba( 127, 127, 127, 0.3 ) 1px;
+}
+
+.ll-change {
+	color: #fa0;
+}
+
+.ll-merge {
+	color: #00f;
 }

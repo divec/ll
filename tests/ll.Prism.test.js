@@ -220,7 +220,7 @@ QUnit.test( 'adaptCorrections', function ( assert ) {
 				ann( null, 'No havo ' ),
 				ann( 'h41c896f073fda2a6', 'ninguna camisa' ),
 				ann( null, ', ' ),
-				ann( 'ha82fb0cce3bc3c12', 'Peter' )
+				ann( 'h46a386170fc6105c', 'Peter' )
 			),
 			msg: 'Partially conflicting translation'
 		}

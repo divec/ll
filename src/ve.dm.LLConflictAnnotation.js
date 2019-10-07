@@ -38,8 +38,8 @@ ve.dm.LLConflictAnnotation.static.toDataElement = function ( domElements ) {
 	return {
 		type: this.name,
 		attributes: {
-			origStart: parseInt(
-				domElements[ 0 ].getAttribute( 'data-origStart' ),
+			chunk: parseInt(
+				domElements[ 0 ].getAttribute( 'data-chunk' ),
 				10
 			) || 0
 		}
@@ -49,7 +49,7 @@ ve.dm.LLConflictAnnotation.static.toDataElement = function ( domElements ) {
 ve.dm.LLConflictAnnotation.static.toDomElements = function ( dataElement, doc ) {
 	var domElement = doc.createElement( 'span' );
 	domElement.classList.add( 'll-conflict' );
-	domElement.setAttribute( 'data-origStart', dataElement.attributes.origStart );
+	domElement.setAttribute( 'data-chunk', dataElement.attributes.chunk );
 	return [ domElement ];
 };
 

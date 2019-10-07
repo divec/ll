@@ -5,11 +5,11 @@
 		"wikimedia/jquery"
 	],
 	"globals": {
-		"ll": true,
-		"ve": true,
-		"Map": false,
-		"OO": false,
-		"unicodeJS": false
+		"ll": "writable",
+		"ve": "readonly",
+		"Map": "readonly",
+		"OO": "readonly",
+		"unicodeJS": "readonly"
 	},
 	"rules": {
 		"no-jquery/no-extend": "error",

@@ -18,6 +18,8 @@ ve.ui.LLConflictContextItem = function VeUiLLConflictContextItem( context, model
 	// Parent constructor
 	ve.ui.LLConflictContextItem.super.call( this, context, model, config );
 
+	this.clearButton.setIcon( 'check' ).clearFlags().setFlags( [ 'progressive' ] );
+
 	// Initialization
 	this.$element.addClass( 've-ui-languageContextItem' );
 };
@@ -30,13 +32,15 @@ OO.inheritClass( ve.ui.LLConflictContextItem, ve.ui.AnnotationContextItem );
 
 ve.ui.LLConflictContextItem.static.name = 'conflict';
 
-ve.ui.LLConflictContextItem.static.icon = 'conflict';
+ve.ui.LLConflictContextItem.static.icon = 'speechBubbles';
 
 ve.ui.LLConflictContextItem.static.label = OO.ui.deferMsg( 'll-conflictcontextitem-title' );
 
 ve.ui.LLConflictContextItem.static.modelClasses = [ ve.dm.LLConflictAnnotation ];
 
 ve.ui.LLConflictContextItem.static.embeddable = false;
+
+ve.ui.LLConflictContextItem.static.editable = false;
 
 ve.ui.LLConflictContextItem.static.commandName = null;
 

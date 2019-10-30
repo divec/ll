@@ -5,7 +5,7 @@
  */
 
 /**
- * Annotation to mark human-added text that conflicts with updates
+ * Annotation to mark human-added text that conflicts with updates.
  *
  * @class
  * @extends ve.dm.Annotation
@@ -34,14 +34,12 @@ ve.dm.LLConflictAnnotation.static.matchFunction = function ( domElement ) {
 ve.dm.LLConflictAnnotation.static.applyToAppendedContent = false;
 
 ve.dm.LLConflictAnnotation.static.toDataElement = function ( domElements ) {
-	// XXX include extra info to display
+	// Embed chunk index in annotation
+	var chunkIndex = domElements[ 0 ].getAttribute( 'data-chunkIndex' );
 	return {
 		type: this.name,
 		attributes: {
-			chunk: parseInt(
-				domElements[ 0 ].getAttribute( 'data-chunk' ),
-				10
-			) || 0
+			chunkIndex: parseInt( chunkIndex, 10 ) || 0
 		}
 	};
 };
@@ -49,7 +47,7 @@ ve.dm.LLConflictAnnotation.static.toDataElement = function ( domElements ) {
 ve.dm.LLConflictAnnotation.static.toDomElements = function ( dataElement, doc ) {
 	var domElement = doc.createElement( 'span' );
 	domElement.classList.add( 'll-conflict' );
-	domElement.setAttribute( 'data-chunk', dataElement.attributes.chunk );
+	domElement.setAttribute( 'data-chunkIndex', dataElement.attributes.chunkIndex );
 	return [ domElement ];
 };
 
@@ -59,7 +57,10 @@ ve.dm.LLConflictAnnotation.static.toDomElements = function ( dataElement, doc ) 
  * @return {Object}
  */
 ve.dm.LLConflictAnnotation.prototype.getComparableObject = function () {
-	return { type: 'll/conflict', origStart: this.getAttribute( 'origStart' ) };
+	return {
+		type: 'll/conflict',
+		chunkIndex: this.getAttribute( 'chunkIndex' )
+	};
 };
 
 /* Registration */

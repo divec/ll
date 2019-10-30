@@ -47,5 +47,29 @@
 }
 
 .ll-merge {
-	color: #00f;
+	color: #08f;
+}
+
+.ll-heading {
+	/* */
+}
+
+.ll-label {
+	padding: 0.25em;
+}
+
+.ll-sample {
+	padding: 0.5em 0.75em;
+}
+
+.ll-oldmt {
+	/* */
+}
+
+.ll-correction {
+	/* */
+}
+
+.ll-newmt {
+	/* */
 }

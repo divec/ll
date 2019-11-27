@@ -44,6 +44,7 @@ ll.Prism = function LLPrism( firstOptions, secondOptions, translator ) {
 
 	this.updateAnnotation = ve.dm.annotationFactory.create( 'll/update' );
 	this.updateHash = this.firstDoc.getStore().hash( this.updateAnnotation );
+	this.unchangedHash = 'UUU';
 
 	this.firstDoc.on( 'precommit', this.applyDistorted.bind( this, this.firstDoc, this.secondDoc ) );
 	this.secondDoc.on( 'precommit', this.applyDistorted.bind( this, this.secondDoc, this.firstDoc ) );
@@ -135,7 +136,8 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 	var prism = this,
 		promises = [];
 	prism.changedNodePairs.forEach( function ( targetNode, sourceNode ) {
-		var chunkedSource, oldChunkedSource, oldChunkedTarget, promise,
+		var chunkedSource, oldChunkedSource, oldChunkedTarget, oldSourceData, sourceData,
+			diff2, promise, lenDiff, diffedChunkedSource,
 			sourceLang = doc.getLang(),
 			targetLang = otherDoc.getLang();
 
@@ -156,12 +158,45 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 			oldChunkedSource = new ll.ChunkedText( '', [], [] );
 			oldChunkedTarget = new ll.ChunkedText( '', [], [] );
 		}
+		// Build diffedChunkedSource: the source with unchanged regions annotated as
+		// unchangedHash, so the corresponding changed regions can be seen in the
+		// machine translation. That way we can ignore "spurious" changes in the
+		// machine translation that don't correspond to any change in the source.
+		//
+		// Note that we mark unchanged ranges instead of changed ranges because the
+		// translation process can sometimes drop annotations. It's better to have a
+		// false positive (= a spurious highlighted translation change that might not
+		// be needed) than a false negative (= a source update missing from the
+		// translation).
+		//
+		// Note that even this is not foolproof, because a source update in one
+		// place can trigger a translation update in a different place,
+		// due to long-range dependencies like tense agreement, which this will drop.
+
+		oldSourceData = oldChunkedSource.toLinearData();
+		sourceData = chunkedSource.toLinearData();
+		diff2 = prism.differ.diff( oldSourceData, sourceData );
+		lenDiff = 0;
+		diff2.forEach( function ( chunk ) {
+			if ( chunk.type === 'RETAIN' ) {
+				ll.annotateDataInPlace(
+					prism.unchangedHash,
+					sourceData,
+					chunk.start + lenDiff,
+					chunk.start + lenDiff + chunk.data.length
+				);
+			} else {
+				lenDiff += chunk.insert.length - chunk.remove.length;
+			}
+		} );
+		diffedChunkedSource = ll.ChunkedText.static.fromLinearData( sourceData );
+
 		promise = prism.translator.translate(
 			sourceLang,
 			targetLang,
-			[ oldChunkedSource, chunkedSource ]
+			[ oldChunkedSource, diffedChunkedSource ]
 		).then( function ( machineTranslations ) {
-			var diff3, newTargetData, tx,
+			var diff3, newTargetData, tx, newMachineData, changedIndexes,
 				oldMachineTranslation = machineTranslations[ 0 ],
 				newMachineTranslation = machineTranslations[ 1 ];
 			if (
@@ -173,13 +208,20 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 				return;
 			}
 			prism.changedNodePairs.delete( sourceNode );
-
+			changedIndexes = newMachineTranslation.toLinearData().map( function ( item ) {
+				var anns = Array.isArray( item ) ?
+					item[ 1 ] :
+					item.annotations;
+				return !anns || anns.indexOf( prism.unchangedHash ) === -1;
+			} );
+			newMachineData = newMachineTranslation.toLinearData();
+			ll.unannotateDataInPlace( prism.unchangedHash, newMachineData, 0, newMachineData.length );
 			diff3 = prism.differ.diff3(
-				newMachineTranslation.toLinearData(),
+				newMachineData,
 				oldMachineTranslation.toLinearData(),
 				oldChunkedTarget.toLinearData()
 			);
-			newTargetData = prism.adaptCorrections( diff3 );
+			newTargetData = prism.adaptCorrections( diff3, changedIndexes );
 			if ( newTargetData ) {
 				tx = ve.dm.TransactionBuilder.static.newFromReplacement(
 					otherDoc,
@@ -208,14 +250,20 @@ ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
  * Adapt corrections from old machine translation to new machine translation
  *
  * @param {Object[]} diff3 Three-way diff of (new machine translation, old machine translation, old corrections)
+ * @param {boolean[]} changedIndexes Indexes in newMachineTranslation corresponding to source changes
  * @return {Array} Linear data for candidate human-corrected newMachineTranslation (with our without conflicts)
  */
-ll.Prism.prototype.adaptCorrections = function ( diff3 ) {
-	var i, iLen, chunk, conflictAnnotation,
+ll.Prism.prototype.adaptCorrections = function ( diff3, changedIndexes ) {
+	var i, iLen, chunk, changed, conflictAnnotation, newTarget,
+		updateHash = this.updateHash,
+		startIndex = 0,
 		data = [];
 
 	for ( i = 0, iLen = diff3.length; i < iLen; i++ ) {
 		chunk = diff3[ i ];
+		changed = chunk[ 0 ] && changedIndexes.slice( startIndex, startIndex + chunk[ 0 ].length ).filter( function ( x ) {
+			return x;
+		} ).length > 0;
 		if ( chunk[ 0 ] === null && chunk[ 2 ] === null ) {
 			// Neither side changed
 			ve.batchPush( data, chunk[ 1 ] );
@@ -224,12 +272,19 @@ ll.Prism.prototype.adaptCorrections = function ( diff3 ) {
 			ve.batchPush( data, chunk[ 2 ] );
 		} else if ( chunk[ 2 ] === null ) {
 			// Translation update only
-			if ( iLen > 1 ) {
-				// Annotate as an update
-				ve.batchPush( data, ll.annotateData( this.updateHash, chunk[ 0 ] ) );
+			if ( !changed ) {
+				// This is a low-probability change, don't apply it
+				ve.batchPush( data, chunk[ 1 ] );
 			} else {
-				// ... but don't annotate if it's the only chunk
-				ve.batchPush( data, chunk[ 0 ] );
+				newTarget = chunk[ 0 ].slice();
+				ll.unannotateDataInPlace( updateHash, newTarget, 0, newTarget.length );
+				if ( iLen > 1 ) {
+					// Annotate as an update
+					ve.batchPush( data, ll.annotateData( updateHash, newTarget ) );
+				} else {
+					// ... but don't annotate if it's the only chunk
+					ve.batchPush( data, newTarget );
+				}
 			}
 		} else {
 			// Translation update conflicts with human correction.
@@ -246,6 +301,7 @@ ll.Prism.prototype.adaptCorrections = function ( diff3 ) {
 				)
 			);
 		}
+		startIndex += ( chunk[ 0 ] || chunk[ 1 ] ).length;
 	}
 	return data;
 };

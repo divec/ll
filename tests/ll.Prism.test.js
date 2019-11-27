@@ -190,7 +190,7 @@ ll.testMaybeTranslate = function ( fakeTimer, assert ) {
 };
 
 QUnit.test( 'adaptCorrections', function ( assert ) {
-	var tests, i, iLen, test, data,
+	var tests, i, iLen, test, data, changedIndexes,
 		store = new ve.dm.HashValueStore(),
 		fakePrism = {
 			store: store,
@@ -223,13 +223,16 @@ QUnit.test( 'adaptCorrections', function ( assert ) {
 			msg: 'Partially conflicting translation'
 		}
 	];
+	changedIndexes = '000000000111111111111110011111'.split( '' ).map( function ( x ) {
+		return x === '1';
+	} );
 	for ( i = 0, iLen = tests.length; i < iLen; i++ ) {
 		test = tests[ i ];
 		data = fakePrism.adaptCorrections( fakePrism.differ.diff3(
 			chunk( test.newMt ).toLinearData(),
 			chunk( test.oldMt ).toLinearData(),
 			chunk( test.oldTarget ).toLinearData()
-		) );
+		), changedIndexes );
 		assert.deepEqual( data, test.newTarget, test.msg );
 	}
 } );

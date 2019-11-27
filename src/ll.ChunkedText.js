@@ -29,6 +29,80 @@ ll.ChunkedText = function LLChunkedText( allText, commonAnnList, chunks ) {
 
 OO.initClass( ll.ChunkedText );
 
+/* Static methods */
+
+/**
+ * Build ChunkedText from content linear data containing only annotated text (no elements)
+ *
+ * @param {Array} data Content linear data containing only annotated text (no elements)
+ * @return {ll.ChunkedText} Annotated chunked content
+ */
+ll.ChunkedText.static.fromLinearData = function ( data ) {
+	var i, len, item, annList, ch, annListStr, commonAnnList, commonAnnListLen, chunks, start,
+		texts = [],
+		annLists = [],
+		chars = [],
+		lastAnnList = null,
+		lastAnnListStr = null;
+
+	function flush() {
+		if ( chars.length === 0 ) {
+			return;
+		}
+		texts.push( chars.join( '' ) );
+		annLists.push( lastAnnList );
+		chars.length = 0;
+	}
+	for ( i = 0, len = data.length; i < len; i++ ) {
+		item = data[ i ];
+		annList = Array.isArray( item ) ? item[ 1 ] : [];
+		ch = Array.isArray( item ) ? item[ 0 ] : item;
+		annListStr = JSON.stringify( annList );
+		if ( lastAnnListStr !== annListStr ) {
+			// Annotation change: flush chunk
+			if ( chars.length > 0 ) {
+				flush();
+				lastAnnList = annList;
+				lastAnnListStr = annListStr;
+			}
+		}
+		chars.push( ch );
+		lastAnnList = annList;
+		lastAnnListStr = annListStr;
+	}
+	if ( chars.length > 0 ) {
+		flush();
+	}
+	if ( texts.length === 0 ) {
+		return new ll.ChunkedText( '', [], [] );
+	}
+	commonAnnListLen = ve.getCommonStartSequenceLength( annLists );
+	commonAnnList = annLists.length === 0 ?
+		[] :
+		annLists[ 0 ].slice(
+			0,
+			ve.getCommonStartSequenceLength( annLists )
+		);
+	chunks = [];
+	start = 0;
+	for ( i = 0, len = texts.length; i < len; i++ ) {
+		// TODO: kill extraneous whitespace inside chunks
+		if ( annLists[ i ].length > commonAnnListLen ) {
+			chunks.push( {
+				start: start,
+				text: texts[ i ],
+				annList: annLists[ i ]
+			} );
+		}
+		start += texts[ i ].length;
+	}
+	return new ll.ChunkedText(
+		texts.join( '' ),
+		commonAnnList,
+		chunks
+	);
+};
+
 /* Instance methods */
 
 ll.ChunkedText.prototype.toJSON = function () {

@@ -140,6 +140,31 @@ ll.setTimeout = setTimeout.bind( null );
 ll.clearTimeout = clearTimeout.bind( null );
 
 /**
+ * Modify linear data in-place by adding annotation in the topmost position
+ *
+ * @param {string} hash The annotation hash
+ * @param {Array} data The linear data to modify in-place
+ * @param {number} start The start of the region to annotate
+ * @param {number} end The end of the region to annotate
+ */
+ll.annotateDataInPlace = function ( hash, data, start, end ) {
+	var i, item;
+	for ( i = start; i < end; i++ ) {
+		item = data[ i ];
+		if ( item.type ) {
+			if ( item.type[ 0 ] === '/' ) {
+				continue;
+			}
+			item.annotations = [ hash ].concat( item.annotations || [] );
+		} else if ( Array.isArray( item ) ) {
+			data[ i ] = [ item[ 0 ], [ hash ].concat( item[ 1 ] ) ];
+		} else {
+			data[ i ] = [ item, [ hash ] ];
+		}
+	}
+};
+
+/**
  * Return a copy of data with an annotation added in the topmost position
  *
  * @param {string} hash The annotation hash
@@ -147,14 +172,60 @@ ll.clearTimeout = clearTimeout.bind( null );
  * @return {Array} Annotated copy of the linear data
  */
 ll.annotateData = function ( hash, data ) {
-	return data.map( function ( item ) {
+	data = data.slice();
+	ll.annotateDataInPlace( hash, data, 0, data.length );
+	return data;
+};
+
+/**
+ * Modify linear data in-place: remove topmost found annotation, where present
+ *
+ * @param {string} hash The annotation hash
+ * @param {Array} data The linear data to modify in-place
+ * @param {number} start The start of the region to annotate
+ * @param {number} end The end of the region to annotate
+ * @return {boolean} True if any changes were made
+ */
+ll.unannotateDataInPlace = function ( hash, data, start, end ) {
+	var i, item, ch, annList, index,
+		changed = false;
+	for ( i = start; i < end; i++ ) {
+		item = data[ i ];
 		if ( item.type ) {
-			// Only annotate text
-			return item;
+			if ( item.type[ 0 ] === '/' ) {
+				continue;
+			}
+			annList = item.annotations;
+			index = annList && annList.lastIndexOf( hash );
+			if ( !annList || index === -1 ) {
+				continue;
+			}
+			annList = annList.slice();
+			annList.splice( index, 1 );
+			if ( annList.length === 0 ) {
+				delete item.annotations;
+			} else {
+				item.annotations = annList;
+			}
+			continue;
 		}
-		if ( Array.isArray( item ) ) {
-			return [ item[ 0 ], [ hash ].concat( item[ 1 ] ) ];
+		if ( !Array.isArray( item ) ) {
+			continue;
 		}
-		return [ item, [ hash ] ];
-	} );
+		ch = item[ 0 ];
+		annList = item[ 1 ];
+		index = annList.lastIndexOf( hash );
+		if ( index === -1 ) {
+			continue;
+		}
+		changed = true;
+		annList = annList.slice();
+		annList.splice( index, 1 );
+		if ( annList.length === 0 ) {
+			data[ i ] = ch;
+		} else {
+			data[ i ] = [ ch, annList ];
+		}
+	}
+	return changed;
 };

@@ -64,3 +64,41 @@ QUnit.test( 'adaptAnnotationsWithModifiedTargets', function ( assert ) {
 		]
 	} );
 } );
+
+QUnit.test( 'annotateDataInPlace / unannotateDataInPlace', function ( assert ) {
+	var origData, expectedData, data;
+	origData = [
+		{ type: 'paragraph' },
+		'a',
+		[ 'b', [ 'qqq' ] ],
+		{ type: 'inlineImage' },
+		{ type: '/inlineImage' },
+		'c',
+		[ 'd', [ 'qqq' ] ],
+		{ type: 'inlineImage', annotations: [ 'rrr' ] },
+		{ type: '/inlineImage' },
+		'e',
+		'f',
+		{ type: '/paragraph' }
+	];
+	expectedData = [
+		{ type: 'paragraph' },
+		'a',
+		[ 'b', [ 'sss', 'qqq' ] ],
+		{ type: 'inlineImage', annotations: [ 'sss' ] },
+		{ type: '/inlineImage' },
+		[ 'c', [ 'sss' ] ],
+		[ 'd', [ 'sss', 'qqq' ] ],
+		{ type: 'inlineImage', annotations: [ 'sss', 'rrr' ] },
+		{ type: '/inlineImage' },
+		[ 'e', [ 'sss' ] ],
+		'f',
+		{ type: '/paragraph' }
+	];
+
+	data = ve.copy( origData );
+	ll.annotateDataInPlace( 'sss', data, 2, 10 );
+	assert.deepEqual( data, expectedData, 'Annotate a range' );
+	ll.unannotateDataInPlace( 'sss', data, 2, 10 );
+	assert.deepEqual( data, origData, 'Unannotate a range' );
+} );

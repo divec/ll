@@ -35,69 +35,8 @@ ve.dm.ContentBranchNode.prototype.setLastApprovedPair = function ( lastApproved 
  * @return {ll.ChunkedText} Annotated chunked content
  */
 ve.dm.ContentBranchNode.prototype.getChunked = function () {
-	var i, len, item, annList, ch, annListStr, commonAnnList, commonAnnListLen, chunks, start,
-		texts = [],
-		annLists = [],
-		chars = [],
-		lastAnnList = null,
-		lastAnnListStr = null,
-		data = this.getDocument().getDataFromNode( this );
-
-	function flush() {
-		if ( chars.length === 0 ) {
-			return;
-		}
-		texts.push( chars.join( '' ) );
-		annLists.push( lastAnnList );
-		chars.length = 0;
-	}
-	for ( i = 0, len = data.length; i < len; i++ ) {
-		item = data[ i ];
-		annList = Array.isArray( item ) ? item[ 1 ] : [];
-		ch = Array.isArray( item ) ? item[ 0 ] : item;
-		annListStr = JSON.stringify( annList );
-		if ( lastAnnListStr !== annListStr ) {
-			// Annotation change: flush chunk
-			if ( chars.length > 0 ) {
-				flush();
-				lastAnnList = annList;
-				lastAnnListStr = annListStr;
-			}
-		}
-		chars.push( ch );
-		lastAnnList = annList;
-		lastAnnListStr = annListStr;
-	}
-	if ( chars.length > 0 ) {
-		flush();
-	}
-	if ( texts.length === 0 ) {
-		return new ll.ChunkedText( '', [], [] );
-	}
-	commonAnnListLen = ve.getCommonStartSequenceLength( annLists );
-	commonAnnList = annLists.length === 0 ?
-		[] :
-		annLists[ 0 ].slice(
-			0,
-			ve.getCommonStartSequenceLength( annLists )
-		);
-	chunks = [];
-	start = 0;
-	for ( i = 0, len = texts.length; i < len; i++ ) {
-		// TODO: kill extraneous whitespace inside chunks
-		if ( annLists[ i ].length > commonAnnListLen ) {
-			chunks.push( {
-				start: start,
-				text: texts[ i ],
-				annList: annLists[ i ]
-			} );
-		}
-		start += texts[ i ].length;
-	}
-	return new ll.ChunkedText(
-		texts.join( '' ),
-		commonAnnList,
-		chunks
+	return ll.ChunkedText.static.fromLinearData(
+		this.getDocument().getDataFromNode( this )
 	);
 };
 

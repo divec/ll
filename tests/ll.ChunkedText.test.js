@@ -4,8 +4,6 @@
  * @copyright 2019 LL team and others; see LICENSE.txt for terms
  */
 
-/* global QUnit */
-
 QUnit.module( 'll.ChunkedText' );
 
 QUnit.test( 'slice', function ( assert ) {

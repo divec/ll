@@ -4,8 +4,6 @@
  * @copyright 2019 LL team and others; see LICENSE.txt for terms
  */
 
-/* global QUnit */
-
 QUnit.module( 'll.Diff' );
 
 QUnit.test( 'diff3', function ( assert ) {

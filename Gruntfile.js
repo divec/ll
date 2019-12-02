@@ -116,7 +116,6 @@ module.exports = function ( grunt ) {
 		},
 		eslint: {
 			options: {
-				reportUnusedDisableDirectives: true,
 				extensions: [ '.js', '.json' ],
 				cache: true
 			},
@@ -129,12 +128,6 @@ module.exports = function ( grunt ) {
 				'!node_modules/**'
 			],
 			html: {
-				options: {
-					// TODO: reportUnusedDisableDirectives doesn't work with plugin-html
-					// (https://github.com/BenoitZugmeyer/eslint-plugin-html/issues/111)
-					// Once that is fixed, merge main and html
-					reportUnusedDisableDirectives: false
-				},
 				src: [
 					'*.html',
 					'{build,demo,src}/**/*.html'

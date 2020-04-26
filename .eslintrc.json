@@ -2,7 +2,8 @@
 	"root": true,
 	"extends": [
 		"wikimedia/client",
-		"wikimedia/jquery"
+		"wikimedia/jquery",
+		"wikimedia/mediawiki"
 	],
 	"globals": {
 		"ll": "writable",
@@ -14,7 +15,7 @@
 	"rules": {
 		"no-jquery/no-extend": "error",
 		"no-jquery/no-visibility": "error",
-		"no-jquery/no-toggle": "error",
+		"mediawiki/valid-package-file-require": "off",
 		"max-len": "off"
 	},
 	"plugins": [ "html" ],

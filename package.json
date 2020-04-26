@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "grunt test",
-    "prepare": "grunt build",
+    "build": "git submodule update --init lib/ve && grunt build && cd lib/ve && npm install && grunt build",
     "doc": "jsduck"
   },
   "homepage": "https://github.com/divec/ll",

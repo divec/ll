@@ -5,15 +5,9 @@
 ## Getting started
 
 - Clone the repository
-- Update the `ve` submodule:
-  - `git submodule update --init lib/ve`
 - Initialise and build the repository:
   - `npm install`
-  - `grunt`
-- Initialise and build the VE sub-module:
-  - `cd lib/ve`
-  - `npm install`
-  - `grunt build`
+  - `npm run build`
 - Configure a translation service:
   - `cp environment.json.apertium-example environment.json`
  (or alternatively, use `environment.json.yandex-example` and put in your Yandex API key)

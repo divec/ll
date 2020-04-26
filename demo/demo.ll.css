@@ -50,8 +50,8 @@
 	color: #08f;
 }
 
+/* stylelint-disable-next-line block-no-empty */
 .ll-heading {
-	/* */
 }
 
 .ll-label {
@@ -62,14 +62,14 @@
 	padding: 0.5em 0.75em;
 }
 
+/* stylelint-disable-next-line block-no-empty */
 .ll-oldmt {
-	/* */
 }
 
+/* stylelint-disable-next-line block-no-empty */
 .ll-correction {
-	/* */
 }
 
+/* stylelint-disable-next-line block-no-empty */
 .ll-newmt {
-	/* */
 }

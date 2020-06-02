@@ -6,6 +6,7 @@
 
 /**
  * Google translator
+ *
  * @abstract
  * @class
  *
@@ -39,6 +40,7 @@ ll.GoogleTranslator.static.codeFromIso = {
 
 /**
  * List of queued tasks.
+ *
  * @static
  * @type {Array}
  */
@@ -46,6 +48,7 @@ ll.GoogleTranslator.static.stack = [];
 
 /**
  * Interval timer for processing the queue.
+ *
  * @static
  * @type {number|null}
  */
@@ -88,7 +91,7 @@ ll.GoogleTranslator.static.process = function () {
  * TODO: Consider moving this up to ll.Translator, as it seems generally useful.
  *
  * @param {Function} task Task function accepting resolve and reject functions as arguments
- * @return {$.Promise} Promised task result or error
+ * @return {jQuery.Promise} Promised task result or error
  */
 ll.GoogleTranslator.static.queue = function ( task ) {
 	var deferred = $.Deferred();

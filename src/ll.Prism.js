@@ -129,7 +129,7 @@ ll.Prism.prototype.flagDirty = function ( changedNodePairs ) {
  *
  * @param {ve.dm.Document} doc The lead document XXX but "lead" is defined per CBN
  * @param {ve.dm.Document} otherDoc The following document XXX ditto
- * @return {Promise} Promise resolving when all translations are complete
+ * @return {jQuery.Promise} Promise resolving when all translations are complete
  */
 ll.Prism.prototype.maybeTranslate = function ( doc, otherDoc ) {
 	var prism = this,

@@ -1,5 +1,7 @@
+'use strict';
+
 function prependPaths( prefix, val ) {
-	var ob, k, v;
+	let ob, k, v;
 	if ( Array.isArray( val ) ) {
 		return val.map( function ( item ) {
 			return prependPaths( prefix, item );

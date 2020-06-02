@@ -6,6 +6,7 @@
 
 /**
  * Abstract class implementing a translator
+ *
  * @abstract
  * @class
  *
@@ -44,14 +45,14 @@ ll.Translator.static.codeFromIso = {};
  * @param {string} sourceLang Source language code; only en|es are supported right now
  * @param {string} targetLang Target language code; only es|en are supported right now
  * @param {ll.ChunkedText[]} texts Texts to translate
- * @return {Promise} Promise resolving with translated ll.ChunkedText[]
+ * @return {jQuery.Promise} Promise resolving with translated ll.ChunkedText[]
  */
 ll.Translator.prototype.translate = null;
 
 /**
  * Get available language pairs, using ISO codes
  *
- * @return {Promise} Promise resolving with list of [{source:'source',target:'target'}]
+ * @return {jQuery.Promise} Promise resolving with list of [{source:'source',target:'target'}]
  */
 ll.Translator.prototype.getLangPairsPromise = function () {
 	return this.langPairsPromise;
@@ -63,7 +64,7 @@ ll.Translator.prototype.getLangPairsPromise = function () {
  * Non-standard codes will get converted by #getIsoFromCode.
  *
  * @method
- * @return {Promise} Promise resolving with list of [{source:'source',target:'target'}]
+ * @return {jQuery.Promise} Promise resolving with list of [{source:'source',target:'target'}]
  */
 ll.Translator.prototype.fetchLangPairsPromise = null;
 
@@ -130,7 +131,7 @@ ll.Translator.prototype.getIsoFromCode = function ( code ) {
  *
  * @param {string} sourceLang Source language ISO code
  * @param {string} targetLang Target language ISO code
- * @return {Promise} Promise resolving with undefined if pair is supported, else rejecting
+ * @return {jQuery.Promise} Promise resolving with undefined if pair is supported, else rejecting
  */
 ll.Translator.prototype.checkLangPair = function ( sourceLang, targetLang ) {
 	var translator = this;
@@ -148,7 +149,7 @@ ll.Translator.prototype.checkLangPair = function ( sourceLang, targetLang ) {
  * @param {string} sourceLang Source language code
  * @param {string} targetLang Target language code
  * @param {string[]} texts The texts to translate
- * @return {Promise} Promise resolving with a string[] of the translated texts
+ * @return {jQuery.Promise} Promise resolving with a string[] of the translated texts
  */
 ll.Translator.prototype.translatePlaintext = null;
 
@@ -158,7 +159,7 @@ ll.Translator.prototype.translatePlaintext = null;
  * @param {string} sourceLang Source language ISO code
  * @param {string} targetLang Target language ISO code
  * @param {ll.ChunkedText[]} sourceTexts The text to translate
- * @return {Promise} Promise resolving with the translated text
+ * @return {jQuery.Promise} Promise resolving with the translated text
  */
 ll.Translator.prototype.translate = function ( sourceLang, targetLang, sourceTexts ) {
 	var plexSourceGroups;
@@ -173,6 +174,7 @@ ll.Translator.prototype.translate = function ( sourceLang, targetLang, sourceTex
 	 *     'foo bar baz QUX quux',
 	 *     'foo bar baz qux quux'
 	 * ]
+	 *
 	 * @param {ll.ChunkedText} chunked The chunked text
 	 * @return {string[]} The corresponding plaintext strings
 	 */

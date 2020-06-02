@@ -6,6 +6,7 @@
 
 /**
  * Yandex translator
+ *
  * @abstract
  * @class
  *

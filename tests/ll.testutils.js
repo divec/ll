@@ -36,6 +36,7 @@ new ll.init.LLTarget();
  * Fake translator that upper-cases and doubles each char
  *
  * Will choke horribly on grapheme clusters, surrogates or even just ß.
+ *
  * @constructor
  */
 ll.FakeTranslator = function LLFakeTranslator() {

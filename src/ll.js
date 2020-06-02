@@ -76,11 +76,6 @@ ll.getTokens = function ( text ) {
  * @param {string} target The target as plaintext
  * @param {string[]} modifiedTargets Copies of the target, each with one chunk modified
  *
- * @param {Array} The target offsets corresponding to each source chunk (undefined if not found)
- * @param {Object} [return.i] The target offsets for the i'th source chunk
- * @param {number} [return.i.start] The start target offset for the i'th chunk
- * @param {number} [return.i.end] The end target offset for the i'th chunk
- *
  * @return {ll.ChunkedText} Target as annotated chunked content
  */
 ll.adaptAnnotationsWithModifiedTargets = function ( chunkedSource, target, modifiedTargets ) {
